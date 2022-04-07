@@ -21,7 +21,7 @@ public class TableSqls {
     public void testInsertSql(){
         queryParser.parseQuery("use database a");
         queryParser.parseQuery("insert into person() values (1,\"a\",\"ab\")");
-        queryParser.parseQuery("insert into person() values (1,\"ab\",\"ab\")");
+        queryParser.parseQuery("insert into person() values (2,\"ab\",\"ab\")");
     }
 
     @Test
