@@ -9,20 +9,27 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class QueryParser {
+    public static String database;
     QueryProcessor queryProcessor = new QueryProcessorImpl();
         private static final String CREATE_TABLE_REGEX = "CREATE\\s*TABLE\\s*";
     private static final String INSERT_TABLE_REGEX = "INSERT\\s* INTO\\s*";
     private static final String DROP_TABLE_REGEX = "DROP\\s*TABLE\\s*";
     private static final String CREATE_DATABASE_REGEX = "CREATE\\s*DATABASE\\s*";
     private static final String DROP_DATABASE_REGEX = "DROP\\s*DATABASE\\s*";
+    private static final String USE_DATABASE_REGEX = "USE\\s*DATABASE\\s*";
     private static final String SELECT_TABLE_REGEX = "select\\s+(.*)from\\s+(.*)(where)\\s+(.*)";
+    private static final String DELETE_ROW = "delete\\s+from\\s+.*where\\s+";
+    private static final String UPDATE_ROW = "update\\s+.*set\\s+.*where\\s+.*";
     public boolean parseQuery(String inputQuery){
         Pattern createTablePattern = Pattern.compile(CREATE_TABLE_REGEX,Pattern.CASE_INSENSITIVE);
         Pattern dropTablePattern = Pattern.compile(DROP_TABLE_REGEX,Pattern.CASE_INSENSITIVE);
         Pattern createDatabasePattern = Pattern.compile(CREATE_DATABASE_REGEX,Pattern.CASE_INSENSITIVE);
+        Pattern useDatabasePattern = Pattern.compile(USE_DATABASE_REGEX,Pattern.CASE_INSENSITIVE);
         Pattern dropDatabasePattern = Pattern.compile(DROP_DATABASE_REGEX,Pattern.CASE_INSENSITIVE);
         Pattern selectPattern = Pattern.compile(SELECT_TABLE_REGEX,Pattern.CASE_INSENSITIVE);
         Pattern insertTablePattern = Pattern.compile(INSERT_TABLE_REGEX,Pattern.CASE_INSENSITIVE);
+        Pattern deleteTablePattern = Pattern.compile(DELETE_ROW,Pattern.CASE_INSENSITIVE);
+        Pattern updateTablePattern = Pattern.compile(UPDATE_ROW,Pattern.CASE_INSENSITIVE);
 
         if (createDatabasePattern.matcher(inputQuery).find()){
             String [] query = inputQuery.split(" ");
@@ -38,6 +45,14 @@ public class QueryParser {
             }
             return queryProcessor.dropDatabase(query[2]);
         }
+        else if (useDatabasePattern.matcher(inputQuery).find()){
+            String [] query = inputQuery.split(" ");
+            if (query.length > 3){
+                throw new IllegalArgumentException("Query syntax is improper");
+            }
+            return queryProcessor.useDatabase(query[2]);
+        }
+
 
         else if (createTablePattern.matcher(inputQuery).find()){
             try{
@@ -80,8 +95,7 @@ public class QueryParser {
                     columns.add(column);
                 }
                 Table table = new Table(tableName, columns);
-                System.out.println(table);
-                queryProcessor.createTable(table,"a");
+                queryProcessor.createTable(database,table);
 
             }
             catch (ImproperQuerySyntaxException e){
@@ -103,7 +117,7 @@ public class QueryParser {
             int indexOfCloseParan = inputQuery.lastIndexOf(")");
             int indexOfOpenParan = inputQuery.lastIndexOf("(");
             String rowValues = inputQuery.substring(indexOfOpenParan+1, indexOfCloseParan);
-            queryProcessor.insertIntoTable(tableName, rowValues);
+            queryProcessor.insertIntoTable(database,tableName, rowValues);
 
            return true;
 
@@ -117,12 +131,45 @@ public class QueryParser {
             String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from")+1);
             String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where")+1);
             String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn)+2);
-            System.out.println(tableName);
-            System.out.println(whereColumn);
-            System.out.println(whereValue);
 
-            queryProcessor.selectFromTable( tableName,  whereColumn,  whereValue);
+            queryProcessor.selectFromTable( database,tableName,  whereColumn,  whereValue);
             return true;
+        }
+
+        else if (deleteTablePattern.matcher(inputQuery).find()){
+            String query[] = inputQuery.split("\\s+");
+            List<String> selectQueryLiterals = new LinkedList<>();
+            for (String s: query){
+                selectQueryLiterals.add(s);
+            }
+            String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from")+1);
+            String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where")+1);
+            String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn)+2);
+            queryProcessor.deletefromTable( database,tableName,  whereColumn,  whereValue);
+            return true;
+
+        }
+        else if (updateTablePattern.matcher(inputQuery).find()){
+            String query[] = inputQuery.split("\\s+");
+            List<String> selectQueryLiterals = new LinkedList<>();
+            for (String s: query){
+                selectQueryLiterals.add(s);
+            }
+            String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("update")+1);
+            String updateColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("set")+1);
+            String updateValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(updateColumn)+2);
+            String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where")+1);
+            String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn)+2);
+            queryProcessor.updateTable( database,tableName,updateColumn, updateValue, whereColumn,  whereValue);
+            return true;
+
+        }
+        else if (dropTablePattern.matcher(inputQuery).find()){
+            String [] query = inputQuery.split(" ");
+            if (query.length > 3){
+                throw new IllegalArgumentException("Query syntax is improper");
+            }
+            return queryProcessor.dropTable(database,query[2]);
         }
         else {
             throw new IllegalArgumentException("Query syntax is improper");
