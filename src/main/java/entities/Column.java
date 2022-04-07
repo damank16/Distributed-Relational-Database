@@ -1,3 +1,4 @@
+package entities;
 
 public class Column {
     private String name;
@@ -36,7 +37,7 @@ public class Column {
 
     @Override
     public String toString() {
-        return "Column{" +
+        return "entities.Column{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", constraint=" + constraint +

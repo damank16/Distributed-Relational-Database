@@ -1,3 +1,5 @@
+package entities;
+
 import java.util.*;
 
 public class Table {
@@ -11,7 +13,7 @@ public class Table {
 
     @Override
     public String toString() {
-        return "Table{" +
+        return "entities.Table{" +
                 "name='" + name + '\'' +
                 ", columnNames=" + columnNames +
                 '}';
