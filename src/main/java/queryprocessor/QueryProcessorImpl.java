@@ -1,4 +1,4 @@
-
+package queryprocessor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import Util.Constants;
+import entities.Column;
+import entities.Table;
 import exceptions.DatabaseAlreadyExistingException;
 import exceptions.TableAlreadyExistingException;
 
@@ -61,7 +64,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 header = header.substring(0, header.length()-1);
                 tableWriter.write(header + "\n");
                 metaWriter.write(metadata);
-                System.out.println("Table created");
+                System.out.println("entities.Table created");
                 tableWriter.flush();
                 tableWriter.close();
                 metaWriter.flush();

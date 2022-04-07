@@ -1,3 +1,8 @@
+package queryprocessor;
+
+import entities.Column;
+import entities.Datatype;
+import entities.Table;
 import exceptions.ImproperQuerySyntaxException;
 
 import java.util.*;

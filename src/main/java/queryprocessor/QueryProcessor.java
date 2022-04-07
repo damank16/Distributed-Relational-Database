@@ -1,3 +1,7 @@
+package queryprocessor;
+
+import entities.Table;
+
 public interface QueryProcessor {
 
     boolean createDatabase(String name);
