@@ -8,14 +8,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import exceptions.DatabaseAlreadyExistingException;
 import exceptions.TableAlreadyExistingException;
 
 public class QueryProcessorImpl implements QueryProcessor {
 
-    private static ObjectWriter jsonMapper = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     @Override
     public boolean createDatabase( String name) {
@@ -106,7 +103,7 @@ public class QueryProcessorImpl implements QueryProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -146,7 +143,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             e.printStackTrace();
         }
 
-        return false;
+        return true;
     }
 
     @Override

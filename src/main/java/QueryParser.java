@@ -86,6 +86,39 @@ public class QueryParser {
 
         }
 
+        else if (insertTablePattern.matcher(inputQuery).find()){
+            //insert into person() values (1,"a","ab")
+
+
+            // third element of array
+            String tableName = inputQuery.split("\\s+")[2];
+            //remove ()
+            tableName = tableName.substring(0,tableName.length()-2);
+
+            int indexOfCloseParan = inputQuery.lastIndexOf(")");
+            int indexOfOpenParan = inputQuery.lastIndexOf("(");
+            String rowValues = inputQuery.substring(indexOfOpenParan+1, indexOfCloseParan);
+            queryProcessor.insertIntoTable(tableName, rowValues);
+
+           return true;
+
+        }
+        else if (selectPattern.matcher(inputQuery).find()){
+            String query[] = inputQuery.split("\\s+");
+            List<String> selectQueryLiterals = new LinkedList<>();
+            for (String s: query){
+                selectQueryLiterals.add(s);
+            }
+            String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from")+1);
+            String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where")+1);
+            String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn)+2);
+            System.out.println(tableName);
+            System.out.println(whereColumn);
+            System.out.println(whereValue);
+
+            queryProcessor.selectFromTable( tableName,  whereColumn,  whereValue);
+            return true;
+        }
         else {
             throw new IllegalArgumentException("Query syntax is improper");
         }
