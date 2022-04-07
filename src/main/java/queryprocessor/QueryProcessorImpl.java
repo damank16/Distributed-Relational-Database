@@ -5,15 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import Util.Constants;
 import entities.Column;
 import entities.Table;
 import exceptions.DatabaseAlreadyExistingException;
 import exceptions.NoSuchDatabaseObject;
+import exceptions.PrimaryKeyContraintViolationException;
 import exceptions.TableAlreadyExistingException;
 
 public class QueryProcessorImpl implements QueryProcessor {
@@ -85,10 +84,6 @@ public class QueryProcessorImpl implements QueryProcessor {
         }
     }
 
-    public boolean createTable(String tableQuery){
-
-        return false;
-    }
 
 
 
@@ -96,19 +91,43 @@ public class QueryProcessorImpl implements QueryProcessor {
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
             Path path = Paths.get(Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + tableName + "_metadata.txt");
-            long lines = Files.lines(path).count();
-            String rowArray[] = rowValues.split(",");
-            if (lines == rowArray.length){
-                FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY+dbName +"/" + tableName + ".txt",true);
-                String rowLine = "";
-                for ( String row: rowArray){
-                    rowLine+= row + "|";
-                }
-                rowLine = rowLine.substring(0,rowLine.length()-1) + "\n";
-                fileWriter.write(rowLine);
-                fileWriter.flush();
-                fileWriter.close();
+            // number of columns in table
+            long totalColsInTable = Files.lines(path).count();
+
+            // get existing rows from table to check uniqueness on PK
+            String fileName = Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + ".txt";
+            List<List<String>> existingRows = getRowsOfTable(fileName);
+
+            // add existing Pk values to a list
+            List<String> pkValues = new ArrayList<>();
+            for (List<String> row :existingRows){
+                // add first element of the row  (assuming this is PK)
+                pkValues.add(row.get(0));
             }
+
+            String rowArray[] = rowValues.split(",");
+
+            // if number of values inserted is same as number of table columns
+            if (totalColsInTable == rowArray.length){
+                // check if PK value is already in table
+                if (!pkValues.contains(rowArray[0])) {
+                    FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY+dbName +"/" + tableName + ".txt",true);
+                    String rowLine = "";
+                    for ( String row: rowArray){
+
+                        rowLine+= row + "|";
+                    }
+                    rowLine = rowLine.substring(0,rowLine.length()-1) + "\n";
+                    fileWriter.write(rowLine);
+                    fileWriter.flush();
+                    fileWriter.close();
+                }
+                else{
+                    throw new PrimaryKeyContraintViolationException();
+                }
+            }
+
+
 
         }
         catch (NoSuchFileException e){
@@ -119,6 +138,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         return true;
     }
+
+
 
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
