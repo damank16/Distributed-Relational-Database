@@ -1,8 +1,9 @@
 package exceptions;
 
-public class DatabaseAlreadyExistingException extends RuntimeException {
+
+public class ImproperQuerySyntaxException extends RuntimeException{
     private String message;
-    public DatabaseAlreadyExistingException(String message) {
+    public ImproperQuerySyntaxException(String message) {
         super(message);
         this.message = message;
     }

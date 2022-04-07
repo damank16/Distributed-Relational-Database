@@ -1,16 +1,16 @@
 public interface QueryProcessor {
 
-    void createDatabase(String name);
+    boolean createDatabase(String name);
 
-    void dropDatabase(String name);
+    boolean dropDatabase(String name);
 
-    void createTable(String name);
+    boolean createTable(Table table, String dbName);
 
-    void insertIntoTable(String insertQuery);
+    boolean insertIntoTable(String tableName, String rowValues);
 
-    void selectFromTable(String selectQuery);
+    boolean selectFromTable(String tableName, String whereColumn, String whereValue);
 
-    void useDatabase(String s);
+    boolean useDatabase(String s);
 
-    void dropTable(String s);
+    boolean dropTable(String s);
 }
