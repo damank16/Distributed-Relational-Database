@@ -63,7 +63,11 @@ public class QueryProcessorImpl implements QueryProcessor {
                 String metadata="";
                 for (Column column : table.getColumnNames()){
                     header += column.getName() + "|";
-                    metadata+=column.getName() + "|"+ column.getType() + "|" + column.getConstraint() + "\n";
+                    metadata+=column.getName() + "|"+ column.getType() + "|" + column.getConstraint();
+                    if (column.isPk()){
+                        metadata+="|PK";
+                    }
+                    metadata+="\n";
                 }
                 header = header.substring(0, header.length()-1);
                 tableWriter.write(header + "\n");

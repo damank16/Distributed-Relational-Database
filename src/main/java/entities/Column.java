@@ -4,6 +4,7 @@ public class Column {
     private String name;
     private String type;
     private int constraint;
+    private boolean isPk;
 
     public Column(String name, String type, int constraint) {
         this.name = name;
@@ -33,6 +34,14 @@ public class Column {
 
     public void setConstraint(int constraint) {
         this.constraint = constraint;
+    }
+
+    public boolean isPk() {
+        return isPk;
+    }
+
+    public void setPk(boolean pk) {
+        isPk = pk;
     }
 
     @Override
