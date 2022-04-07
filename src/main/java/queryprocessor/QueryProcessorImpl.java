@@ -22,8 +22,10 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean createDatabase( String name) {
         File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
+        File metaDatadirectory = new File(Constants.BASE_PATH_DIRECTORY + name + "/metadata/");
         if(!directory.exists()){
             directory.mkdir();
+            metaDatadirectory.mkdir();
             return true;
         }
         else {
@@ -52,7 +54,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean createTable(String dbName,Table table) {
         File file = new File(Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + ".txt");
-        File metadataFile = new File(Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + "_metadata.txt");
+        File metadataFile = new File(Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt");
         try {
             if(file.createNewFile()){
                 FileWriter tableWriter = new FileWriter(file);
@@ -89,7 +91,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
-            Path path = Paths.get(Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + "_metadata.txt");
+            Path path = Paths.get(Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + tableName + "_metadata.txt");
             long lines = Files.lines(path).count();
             String rowArray[] = rowValues.split(",");
             if (lines == rowArray.length){
@@ -162,7 +164,7 @@ public class QueryProcessorImpl implements QueryProcessor {
         File file = new File(fileName);
         if (file.exists()) {
             file.delete();
-            File metadata = new File(Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + "_metadata.txt");
+            File metadata = new File(Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt");
             metadata.delete();
             return true;
         }
