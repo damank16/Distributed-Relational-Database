@@ -31,6 +31,10 @@ public class QueryParser {
         Pattern deleteTablePattern = Pattern.compile(DELETE_ROW,Pattern.CASE_INSENSITIVE);
         Pattern updateTablePattern = Pattern.compile(UPDATE_ROW,Pattern.CASE_INSENSITIVE);
 
+
+        // change to lowercase because string.contains() is case sensitive
+        inputQuery = inputQuery.toLowerCase(Locale.ROOT);
+
         if (createDatabasePattern.matcher(inputQuery).find()){
             String [] query = inputQuery.split(" ");
             if (query.length > 3){
@@ -66,6 +70,18 @@ public class QueryParser {
                 String columnArray[] = columnNames.split(",\\s*");
                 Set<Column> columns = new LinkedHashSet<>();
                 for (String col : columnArray){
+
+                    if (col.contains("primary key")){
+                        int indexOfOpenParan = col.indexOf("(");
+                        int indexOfCloseParan = col.indexOf(")");
+                        String pkCol = col.substring(indexOfOpenParan+1, indexOfCloseParan);
+                        Column pkColumn = columns.stream().filter(c->c.getName().equals(pkCol)).findFirst().orElse(null);
+                        if (pkColumn!=null) {
+                            pkColumn.setPk(true);
+                            break;
+                        }
+                    }
+
                     String[] colArray = col.split("\\s+");
                     String colName = colArray[0];
                     int indexOfOpenParan = colArray[1].indexOf("(");
@@ -89,10 +105,13 @@ public class QueryParser {
 
                     }
 
+
                     datatype = colArray[1].substring(0,indexOfOpenParan);
                     constraint = Integer.parseInt(colArray[1].substring(indexOfOpenParan+1, indexOfCloseParan));
                     Column column = new Column(colName,datatype,constraint);
                     columns.add(column);
+
+
                 }
                 Table table = new Table(tableName, columns);
                 queryProcessor.createTable(database,table);

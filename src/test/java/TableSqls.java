@@ -13,7 +13,7 @@ public class TableSqls {
     @Test
     public void testCreateSql(){
         queryParser.parseQuery("use database a");
-        queryParser.parseQuery("create table person (id int, name varchar(255), address varchar(255))");
+        queryParser.parseQuery("create table person (id int, name varchar(255), address varchar(255), PRIMARY KEY (id))");
         queryParser.parseQuery("create table item (id int, price float)");
     }
 
