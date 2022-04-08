@@ -14,8 +14,8 @@ import exceptions.DatabaseAlreadyExistingException;
 import exceptions.NoSuchDatabaseObject;
 import exceptions.PrimaryKeyContraintViolationException;
 import exceptions.TableAlreadyExistingException;
-import main.Main;
 import replication.SFTP;
+import view.DBOperationsOptions;
 
 public class QueryProcessorImpl implements QueryProcessor {
 
@@ -28,7 +28,7 @@ public class QueryProcessorImpl implements QueryProcessor {
         if(!directory.exists()){
             directory.mkdir();
             metaDatadirectory.mkdir();
-            if (Main.isDistributed) {
+            if (DBOperationsOptions.isDistributed) {
                 fileTransfer.replicate(name, false, false, true, false, false);
                 fileTransfer.replicate(name, true, false, true, false, false);
             }
@@ -45,7 +45,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     public boolean dropDatabase( String name) {
         File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
         recursivelyDeleteFiles(directory);
-        if (Main.isDistributed) {
+        if (DBOperationsOptions.isDistributed) {
             fileTransfer.replicate(name, false, false, false, false, true);
         }
         return true;
@@ -88,7 +88,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 tableWriter.close();
                 metaWriter.flush();
                 metaWriter.close();
-                if (Main.isDistributed) {
+                if (DBOperationsOptions.isDistributed) {
                     fileTransfer.replicate(tableFile, false, true, false, false, false);
                     fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
 
@@ -142,7 +142,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                     fileWriter.write(rowLine);
                     fileWriter.flush();
                     fileWriter.close();
-                    if (Main.isDistributed) {
+                    if (DBOperationsOptions.isDistributed) {
                         fileTransfer.replicate(tableFile, false, true, false, false, false);
                         fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
                     }
@@ -217,7 +217,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             file.delete();
             File metadata = new File(metadataFileName);
             metadata.delete();
-            if (Main.isDistributed) {
+            if (DBOperationsOptions.isDistributed) {
                 fileTransfer.replicate(fileName, false, false, false, true, false);
                 fileTransfer.replicate(metadataFileName, true, false, false, true, false);
             }
@@ -260,7 +260,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
             writer.flush();
             writer.close();
-            if (Main.isDistributed) {
+            if (DBOperationsOptions.isDistributed) {
                 fileTransfer.replicate(tableFile, false, true, false, false, false);
                 fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
             }
@@ -307,7 +307,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
             writer.flush();
             writer.close();
-            if (Main.isDistributed) {
+            if (DBOperationsOptions.isDistributed) {
                 fileTransfer.replicate(tableFile, false, true, false, false, false);
                 fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
             }
@@ -323,10 +323,8 @@ public class QueryProcessorImpl implements QueryProcessor {
     public void simpleSelectFromTable(String database, String tableName) {
         try{
             String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
-            //List<List<String>> result = new LinkedList<>();
             List<List<String>> rows = getRowsOfTable(fileName);
             List<String> headerRow = rows.get(0);
-            //result.add(headerRow);
 
             for (List<String> row: rows){
                 for (String val : row){
