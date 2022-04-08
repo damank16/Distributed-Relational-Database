@@ -18,6 +18,7 @@ public class QueryParser {
     private static final String DROP_DATABASE_REGEX = "DROP\\s*DATABASE\\s*";
     private static final String USE_DATABASE_REGEX = "USE\\s*DATABASE\\s*";
     private static final String SELECT_TABLE_REGEX = "select\\s+(.*)from\\s+(.*)(where)\\s+(.*)";
+    private static final String SIMPLE_SELECT_REGEX = "select\\s+(.*)from\\s+(.*)";
     private static final String DELETE_ROW = "delete\\s+from\\s+.*where\\s+";
     private static final String UPDATE_ROW = "update\\s+.*set\\s+.*where\\s+.*";
     private static final String START_TRANSACTION_REGEX = "^(?i)START TRANSACTION$";
@@ -52,6 +53,7 @@ public class QueryParser {
         Pattern useDatabasePattern = Pattern.compile(USE_DATABASE_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern dropDatabasePattern = Pattern.compile(DROP_DATABASE_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern selectPattern = Pattern.compile(SELECT_TABLE_REGEX, Pattern.CASE_INSENSITIVE);
+        Pattern simpleSelectPattern = Pattern.compile(SIMPLE_SELECT_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern insertTablePattern = Pattern.compile(INSERT_TABLE_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern deleteTablePattern = Pattern.compile(DELETE_ROW, Pattern.CASE_INSENSITIVE);
         Pattern updateTablePattern = Pattern.compile(UPDATE_ROW, Pattern.CASE_INSENSITIVE);
@@ -186,7 +188,22 @@ public class QueryParser {
                 queryProcessor.selectFromTable(database, tableName, whereColumn, whereValue);
                 return true;
             }
-        } else if (deleteTablePattern.matcher(inputQuery).find()) {
+        }else if (simpleSelectPattern.matcher(inputQuery).find()) {
+            if (checkFileExists(transactionFilePath)) {
+                return writeIntoFile(transactionFilePath, inputQuery);
+            } else {
+                String[] query = inputQuery.split("\\s+");
+                List<String> selectQueryLiterals = new LinkedList<>();
+                for (String s : query) {
+                    selectQueryLiterals.add(s);
+                }
+                String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from") + 1);
+
+                queryProcessor.simpleSelectFromTable(database, tableName);
+                return true;
+            }
+        }
+        else if (deleteTablePattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
                 return writeIntoFile(transactionFilePath, inputQuery);
             } else {
