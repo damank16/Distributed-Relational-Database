@@ -53,7 +53,7 @@ public class QueryParser {
         Pattern useDatabasePattern = Pattern.compile(USE_DATABASE_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern dropDatabasePattern = Pattern.compile(DROP_DATABASE_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern selectPattern = Pattern.compile(SELECT_TABLE_REGEX, Pattern.CASE_INSENSITIVE);
-        Pattern simpleSelectPattern = Pattern.compile(SELECT_TABLE_REGEX, Pattern.CASE_INSENSITIVE);
+        Pattern simpleSelectPattern = Pattern.compile(SIMPLE_SELECT_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern insertTablePattern = Pattern.compile(INSERT_TABLE_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern deleteTablePattern = Pattern.compile(DELETE_ROW, Pattern.CASE_INSENSITIVE);
         Pattern updateTablePattern = Pattern.compile(UPDATE_ROW, Pattern.CASE_INSENSITIVE);
