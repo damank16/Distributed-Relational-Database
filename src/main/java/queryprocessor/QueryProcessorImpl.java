@@ -254,7 +254,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 for (String val : row) {
                     rowString += val + "|";
                 }
-                rowString = rowString.substring(0, rowString.length() - 1) + "\n";
+                rowString = rowString.substring(0,rowString.length()-1) + "\n";
                 writer.write(rowString);
                 //System.out.println();
             }
