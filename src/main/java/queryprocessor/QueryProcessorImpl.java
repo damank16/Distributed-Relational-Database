@@ -14,9 +14,11 @@ import exceptions.DatabaseAlreadyExistingException;
 import exceptions.NoSuchDatabaseObject;
 import exceptions.PrimaryKeyContraintViolationException;
 import exceptions.TableAlreadyExistingException;
+import replication.SFTP;
 
 public class QueryProcessorImpl implements QueryProcessor {
 
+    private SFTP fileTransfer = new SFTP();
 
     @Override
     public boolean createDatabase( String name) {
@@ -25,6 +27,10 @@ public class QueryProcessorImpl implements QueryProcessor {
         if(!directory.exists()){
             directory.mkdir();
             metaDatadirectory.mkdir();
+            fileTransfer.replicate(name,false,false,true, false, false);
+            fileTransfer.replicate(name,true,false,true, false, false);
+//            fileTransfer1.makeDirectory(name,false);
+
             return true;
         }
         else {
@@ -37,6 +43,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     public boolean dropDatabase( String name) {
         File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
         recursivelyDeleteFiles(directory);
+        fileTransfer.replicate(name,false,false,false,false,true);
         return true;
     }
 
@@ -52,8 +59,10 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean createTable(String dbName,Table table) {
-        File file = new File(Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + ".txt");
-        File metadataFile = new File(Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt");
+        String tableFile = Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + ".txt";
+        String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt";
+        File file = new File(tableFile);
+        File metadataFile = new File(tableMetaDataFile);
         try {
             if(file.createNewFile()){
                 FileWriter tableWriter = new FileWriter(file);
@@ -75,6 +84,8 @@ public class QueryProcessorImpl implements QueryProcessor {
                 tableWriter.close();
                 metaWriter.flush();
                 metaWriter.close();
+                fileTransfer.replicate(tableFile,false, true,false, false, false);
+                fileTransfer.replicate(tableMetaDataFile,true, true,false, false, false);
                 return true;
             }else{
                 throw  new TableAlreadyExistingException();
@@ -90,6 +101,9 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
+            String tableFile = Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + ".txt";
+            String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + tableName + "_metadata.txt";
+
             Path path = Paths.get(Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + tableName + "_metadata.txt");
             // number of columns in table
             long totalColsInTable = Files.lines(path).count();
@@ -121,6 +135,9 @@ public class QueryProcessorImpl implements QueryProcessor {
                     fileWriter.write(rowLine);
                     fileWriter.flush();
                     fileWriter.close();
+
+                    fileTransfer.replicate(tableFile, false,true,false, false, false);
+                    fileTransfer.replicate(tableMetaDataFile, true,true,false, false, false);
                 }
                 else{
                     throw new PrimaryKeyContraintViolationException();
@@ -186,11 +203,14 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean dropTable(String database, String tableName) {
         String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
+        String metadataFileName = Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt";
         File file = new File(fileName);
         if (file.exists()) {
             file.delete();
-            File metadata = new File(Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt");
+            File metadata = new File(metadataFileName);
             metadata.delete();
+            fileTransfer.replicate(fileName,false,false,false,true,false);
+            fileTransfer.replicate(metadataFileName,true,false,false,true,false);
             return true;
         }
         else {
@@ -201,6 +221,9 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean deletefromTable(String database, String tableName, String whereColumn, String whereValue) {
+        String tableFile = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
+        String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt";
+
         try{
             String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
             List<List<String>> result = new LinkedList<>();
@@ -227,6 +250,8 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
             writer.flush();
             writer.close();
+            fileTransfer.replicate(tableFile, false,true,false, false, false);
+            fileTransfer.replicate(tableMetaDataFile, true,true,false, false, false);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -237,6 +262,9 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean updateTable(String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue) {
+        String tableFile = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName+ ".txt";
+        String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt";
+
         try{
 
             String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
@@ -267,6 +295,8 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
             writer.flush();
             writer.close();
+            fileTransfer.replicate(tableFile, false,true,false, false, false);
+            fileTransfer.replicate(tableMetaDataFile, true,true,false, false, false);
         }
         catch (IOException e){
             e.printStackTrace();
