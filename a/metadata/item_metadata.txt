@@ -1,0 +1,2 @@
+id|int|9
+price|float|9
