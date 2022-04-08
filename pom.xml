@@ -62,7 +62,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        replication.SFTPFileTransfer
+                                        Main
                                     </mainClass>
                                 </manifest>
                             </archive>

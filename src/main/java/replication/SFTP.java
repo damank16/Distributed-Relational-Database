@@ -3,9 +3,15 @@ package replication;
 
 import com.jcraft.jsch.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class SFTP {
     //    private static final String REMOTE_HOST = "34.152.57.185";
-    private static final String REMOTE_HOST = "34.152.36.90";
+//    private static final String REMOTE_HOST = "34.152.36.90";
+    private static final String HOST_1 = "10.162.0.5";
+    private static final String HOST_2 = "10.162.0.4";
+    private  String  currentRemoteHost = "";
     private static final String USERNAME = "rsa-key-20220407";
     private static final String PASSWORD = "";
     private static final int REMOTE_PORT = 22;
@@ -18,19 +24,21 @@ public class SFTP {
         Session jschSession = null;
 
         try {
-
+            currentRemoteHost = getRemoteHost();
 
 
             JSch jsch = new JSch();
-//           jsch.setKnownHosts("E:\\Winter22\\Data\\project\\distributed_database\\keys\\known_hosts");
-            jschSession = jsch.getSession(USERNAME, REMOTE_HOST, REMOTE_PORT);
+          jschSession = jsch.getSession(USERNAME, currentRemoteHost, REMOTE_PORT);
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             jschSession.setConfig(config);
 
 //             authenticate using private key
-            jsch.addIdentity("keys\\privatedemo_open.ppk");
+//            jsch.addIdentity("keys\\privatedemo_open.ppk");
+            jsch.addIdentity("/home/elizabethj596/keys/privatedemo_open.ppk");
+
+//            jsch.addIdentity(getClass().getResourceAsStream("privatedemo_open.ppk"));
 
             // authenticate using password
 //            jschSession.setPassword(PASSWORD);
@@ -71,6 +79,28 @@ public class SFTP {
             }
         }
         System.out.println("Done");
+    }
+
+    private String getRemoteHost() {
+        InetAddress ip;
+        String currentRemoteHost = null;
+        try {
+            ip = InetAddress.getLocalHost();
+            System.out.println(ip);
+            String localHost = ip.toString().split("/")[1];
+
+            if (localHost.equals(HOST_1)){
+                currentRemoteHost = HOST_2;
+            }
+            else {
+                currentRemoteHost = HOST_1;
+            }
+
+        } catch (UnknownHostException e) {
+
+            e.printStackTrace();
+        }
+        return currentRemoteHost;
     }
 
     private void removeDirectory(ChannelSftp channelSftp, String file, boolean isMetaData) throws SftpException {
