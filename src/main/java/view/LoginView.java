@@ -17,7 +17,7 @@ public class LoginView {
         Printer.printContent("Enter username/email :");
         String username = sc.nextLine();
 
-        Printer.printContent("Enter password (Should be between 8-20 chars, must contain letter, number and special character :");
+        Printer.printContent("Enter password :");
         String password = sc.nextLine();
 
         int questionIndex = SecurityQuestions.getRandomSecurityQuestionIndex();

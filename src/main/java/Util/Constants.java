@@ -2,6 +2,7 @@ package Util;
 
 public class Constants {
     public static final String BASE_PATH_DIRECTORY = "./";
+    public static final String SQL_DUMP_PATH_DIRECTORY = "./dumps";
     public static final String USER_REGISTRATION_SUCCESS_MSG = "User %s is registered successfully";
     public static final String USER_REGISTRATION_ERROR_MSG = "User %s registration failed" ;
     public static final String USER_SAVE_ERROR = "Some error occurred while saving user details in DB. Please try again.";
