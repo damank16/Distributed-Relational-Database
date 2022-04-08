@@ -21,10 +21,10 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean createDatabase( String name) {
         File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
-        File metaDatadirectory = new File(Constants.BASE_PATH_DIRECTORY + name + "/metadata/");
+        File metaDataDirectory = new File(Constants.BASE_PATH_DIRECTORY + name + "/metadata/");
         if(!directory.exists()){
             directory.mkdir();
-            metaDatadirectory.mkdir();
+            metaDataDirectory.mkdir();
             return true;
         }
         else {
@@ -84,9 +84,6 @@ public class QueryProcessorImpl implements QueryProcessor {
         }
     }
 
-
-
-
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
@@ -126,9 +123,6 @@ public class QueryProcessorImpl implements QueryProcessor {
                     throw new PrimaryKeyContraintViolationException();
                 }
             }
-
-
-
         }
         catch (NoSuchFileException e){
             throw new NoSuchDatabaseObject();
@@ -138,8 +132,6 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         return true;
     }
-
-
 
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
