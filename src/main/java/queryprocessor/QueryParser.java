@@ -9,15 +9,18 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class QueryParser {
+
+
     public static String database;
     QueryProcessor queryProcessor = new QueryProcessorImpl();
-        private static final String CREATE_TABLE_REGEX = "CREATE\\s*TABLE\\s*";
+    private static final String CREATE_TABLE_REGEX = "CREATE\\s*TABLE\\s*";
     private static final String INSERT_TABLE_REGEX = "INSERT\\s* INTO\\s*";
     private static final String DROP_TABLE_REGEX = "DROP\\s*TABLE\\s*";
     private static final String CREATE_DATABASE_REGEX = "CREATE\\s*DATABASE\\s*";
     private static final String DROP_DATABASE_REGEX = "DROP\\s*DATABASE\\s*";
     private static final String USE_DATABASE_REGEX = "USE\\s*DATABASE\\s*";
     private static final String SELECT_TABLE_REGEX = "select\\s+(.*)from\\s+(.*)(where)\\s+(.*)";
+    private static final String SIMPLE_SELECT_TABLE_REGEX = "select\\s+(.*)from\\s+(.*)";
     private static final String DELETE_ROW = "delete\\s+from\\s+.*where\\s+";
     private static final String UPDATE_ROW = "update\\s+.*set\\s+.*where\\s+.*";
     public boolean parseQuery(String inputQuery){
@@ -30,6 +33,7 @@ public class QueryParser {
         Pattern insertTablePattern = Pattern.compile(INSERT_TABLE_REGEX,Pattern.CASE_INSENSITIVE);
         Pattern deleteTablePattern = Pattern.compile(DELETE_ROW,Pattern.CASE_INSENSITIVE);
         Pattern updateTablePattern = Pattern.compile(UPDATE_ROW,Pattern.CASE_INSENSITIVE);
+        Pattern simpleSelectPattern = Pattern.compile(SIMPLE_SELECT_TABLE_REGEX,Pattern.CASE_INSENSITIVE);
 
 
         // change to lowercase because string.contains() is case sensitive
@@ -63,7 +67,7 @@ public class QueryParser {
                 int indexOfFirstParanthesis = inputQuery.indexOf("(");
                 int indexOfLastParanthesis = inputQuery.lastIndexOf(")");
                 if (indexOfFirstParanthesis == -1 || indexOfLastParanthesis == -1){
-                    throw new ImproperQuerySyntaxException("");
+                    throw new ImproperQuerySyntaxException("Improper query");
                 }
                 String tableName = inputQuery.split("\\s+")[2];
                 String columnNames = inputQuery.substring(indexOfFirstParanthesis + 1,indexOfLastParanthesis);
@@ -152,6 +156,16 @@ public class QueryParser {
             String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn)+2);
 
             queryProcessor.selectFromTable( database,tableName,  whereColumn,  whereValue);
+            return true;
+        }
+        else if (simpleSelectPattern.matcher(inputQuery).find()){
+            String query[] = inputQuery.split("\\s+");
+            List<String> selectQueryLiterals = new LinkedList<>();
+            for (String s: query){
+                selectQueryLiterals.add(s);
+            }
+            String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from")+1);
+            queryProcessor.simpleSelectFromTable( database,tableName);
             return true;
         }
 
