@@ -2,11 +2,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import queryprocessor.QueryParser;
 
+import java.io.IOException;
+
 public class DatabaseSqlsTest {
     QueryParser queryParser = new QueryParser();
 
     @Test
-    public void testCreateDatabase(){
+    public void testCreateDatabase() throws IOException {
         Assertions.assertTrue(queryParser.parseQuery("create database a"));
     }
     @Test
@@ -16,7 +18,7 @@ public class DatabaseSqlsTest {
 
     }
     @Test
-    public void testDropDatabase(){
+    public void testDropDatabase() throws IOException {
         Assertions.assertTrue(queryParser.parseQuery("drop database a"));
     }
     @Test
