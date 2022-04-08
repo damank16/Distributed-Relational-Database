@@ -41,8 +41,8 @@ public class Log {
         fileUtility.writeDataToFile("events", message);
     }
 
-    public void addQueryLog(String databaseName, boolean isQueryValid, String query, String user, String virtualMachine, String tableName) {
-        String message = createMessage(getTimeStamp(), user, databaseName, isQueryValid + "", query, virtualMachine, tableName);
+    public void addQueryLog(String databaseName, boolean isQueryValid, String query, String queryType, String user, String virtualMachine, String tableName) {
+        String message = createMessage(getTimeStamp(), user, databaseName, isQueryValid + "", query, queryType, virtualMachine, tableName);
         fileUtility.writeDataToFile("query", message);
     }
 }
