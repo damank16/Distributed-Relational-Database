@@ -22,4 +22,6 @@ public interface QueryProcessor {
     boolean deletefromTable(String database, String tableName, String whereColumn, String whereValue);
 
     boolean updateTable(String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue);
+
+    void simpleSelectFromTable(String database, String tableName);
 }
