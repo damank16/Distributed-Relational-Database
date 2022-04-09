@@ -2,8 +2,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import queryprocessor.QueryParser;
 
-import java.io.IOException;
-
 
 public class TableSqls {
     QueryParser queryParser = new QueryParser();

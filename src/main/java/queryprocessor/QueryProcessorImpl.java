@@ -60,12 +60,12 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean createTable(String dbName,Table table) {
-
-        //FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
         String tableFile = Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + ".txt";
         String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt";
         File file = new File(tableFile);
         File metadataFile = new File(tableMetaDataFile);
+
+        //FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
         try {
             if(file.createNewFile()){
                 FileWriter tableWriter = new FileWriter(file);
@@ -105,9 +105,6 @@ public class QueryProcessorImpl implements QueryProcessor {
         }
     }
 
-
-
-
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
@@ -135,13 +132,13 @@ public class QueryProcessorImpl implements QueryProcessor {
             if (totalColsInTable == rowArray.length){
                 // check if PK value is already in table
                 if (!pkValues.contains(rowArray[0])) {
-                    FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + ".txt", true);
+                    FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY+dbName +"/" + tableName + ".txt",true);
                     String rowLine = "";
-                    for (String row : rowArray) {
+                    for ( String row: rowArray){
 
-                        rowLine += row + "|";
+                        rowLine+= row + "|";
                     }
-                    rowLine = rowLine.substring(0, rowLine.length() - 1) + "\n";
+                    rowLine = rowLine.substring(0,rowLine.length()-1) + "\n";
                     fileWriter.write(rowLine);
                     fileWriter.flush();
                     fileWriter.close();
@@ -166,8 +163,6 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         return true;
     }
-
-
 
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {

@@ -28,8 +28,8 @@ public class SFTP {
             jschSession.setConfig(config);
 
 //             authenticate using private key
-//            jsch.addIdentity("keys\\private_key_6_open.ppk");
-            jsch.addIdentity("/home/elizabethj596/keys/private_key_6_open.ppk");
+            jsch.addIdentity("keys\\private_key_5_open.ppk");
+//            jsch.addIdentity("/home/elizabethj596/keys/private_key_5_open.ppk");
 
             // authenticate using password
 //            jschSession.setPassword(PASSWORD);

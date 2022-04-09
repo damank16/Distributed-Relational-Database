@@ -1,6 +1,7 @@
 package view;
 
 import Util.Printer;
+import exceptions.SQLDumpGenratorException;
 import features.controller.SQLDumpExportController;
 import queryprocessor.QueryParser;
 import session.Session;
@@ -54,14 +55,14 @@ public class DBOperationsOptions {
                     break;
                 }
                 case "2":
-                /*    Printer.printContent("Enter database name to generate SQL dump:");
+                    Printer.printContent("Enter database name to generate SQL dump:");
                      String databaseName = scanner.nextLine().trim();
                      SQLDumpExportController sqlDumpExportController = new SQLDumpExportController();
                     try {
                         sqlDumpExportController.generateDump(databaseName);
                     } catch (SQLDumpGenratorException e) {
                         Printer.printContent(e.toString());
-                    }*/
+                    }
                     break;
                 case "3":
                     break;

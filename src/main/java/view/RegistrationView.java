@@ -31,7 +31,7 @@ public class RegistrationView {
         Scanner sc = new Scanner(System.in);
         String userName = sc.nextLine();
 
-        Printer.printContent("Enter Password: ");
+        Printer.printContent("Enter Password (Should be between 8-20 chars, must contain letter, number and special character) : ");
         String password = sc.nextLine();
 
         Map<Integer, String> questionsMap = SecurityQuestions.questionsMap;
