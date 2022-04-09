@@ -334,7 +334,8 @@ public class QueryParser {
         }
     }
         catch (Exception e){
-            log.addEventLog(database, SFTP.REMOTE_HOST,Session.getInstance().getLoggedInDBUser().getUserName(), e.getCause() + e.getMessage());
+            log.addEventLog(database, SFTP.REMOTE_HOST,Session.getInstance().getLoggedInDBUser().getUserName(), e.toString());
+
         }
         return true;
     }

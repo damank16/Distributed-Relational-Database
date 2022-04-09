@@ -33,6 +33,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
 
             log.addQueryLog(name,query,Constants.CREATE,username,VMName,"");
+            log.addEventLog(name,VMName,username,"Database "+ name + " created");
             return true;
         }
         else {
@@ -49,6 +50,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             fileTransfer.replicate(name, false, false, false, false, true);
         }
         log.addQueryLog(name,query,Constants.DROP,username,VMName,"");
+        log.addEventLog(name,VMName,username,"Database "+ name + " dropped");
 
         return true;
     }
@@ -105,9 +107,10 @@ public class QueryProcessorImpl implements QueryProcessor {
 
                 }
                 log.addQueryLog(dbName,query,Constants.CREATE,username,VMName,table.getName());
+                log.addEventLog(dbName,VMName,username,"Table "+ table.getName() + " created");
                 return true;
             }else{
-                throw  new TableAlreadyExistingException();
+                throw  new TableAlreadyExistingException("Table already existing");
             }
         } catch (IOException e) {
             throw new NoDatabaseSelected("no database was selected");
@@ -159,6 +162,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                         fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
                     }
                     log.addQueryLog(dbName,query,Constants.INSERT,username,VMName,tableName);
+                    log.addEventLog(dbName,VMName,username,"Row inserted in "+ tableName);
                 }
                 else{
                     throw new PrimaryKeyContraintViolationException("Duplicate primary key");
@@ -237,6 +241,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 fileTransfer.replicate(metadataFileName, true, false, false, true, false);
             }
             log.addQueryLog(database,query,Constants.DROP,username,VMName,tableName);
+            log.addEventLog(database,VMName,username,"Table "+ tableName + " dropped");
             return true;
         }
         else {
@@ -285,6 +290,7 @@ public class QueryProcessorImpl implements QueryProcessor {
            throw new NoSuchDatabaseObject("no such table");
         }
         log.addQueryLog(database,query,Constants.DELETE,username,VMName,tableName);
+        log.addEventLog(database,VMName,username,"Rows deleted from "+ tableName);
         return true;
     }
 
@@ -333,6 +339,7 @@ public class QueryProcessorImpl implements QueryProcessor {
         }
 
         log.addQueryLog(database,query,Constants.UPDATE,username,VMName,tableName);
+        log.addEventLog(database,VMName,username,"Rows updated in "+ tableName);
         return true;
     }
 
