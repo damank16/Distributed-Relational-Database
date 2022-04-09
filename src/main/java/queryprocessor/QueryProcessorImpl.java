@@ -10,10 +10,7 @@ import java.util.*;
 import Util.Constants;
 import entities.Column;
 import entities.Table;
-import exceptions.DatabaseAlreadyExistingException;
-import exceptions.NoSuchDatabaseObject;
-import exceptions.PrimaryKeyContraintViolationException;
-import exceptions.TableAlreadyExistingException;
+import exceptions.*;
 import replication.SFTP;
 import view.DBOperationsOptions;
 
@@ -67,6 +64,8 @@ public class QueryProcessorImpl implements QueryProcessor {
         String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt";
         File file = new File(tableFile);
         File metadataFile = new File(tableMetaDataFile);
+
+        //FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
         try {
             if(file.createNewFile()){
                 FileWriter tableWriter = new FileWriter(file);
@@ -78,6 +77,10 @@ public class QueryProcessorImpl implements QueryProcessor {
                     metadata+=column.getName() + "|"+ column.getType() + "|" + column.getConstraint();
                     if (column.isPk()){
                         metadata+="|PK";
+                    }
+
+                    if (column.isFk()){
+                        metadata+="|FK|"+ column.getForeignKeyTable().getName() +"|" + column.getForeignKeyTableCol().getName();
                     }
                     metadata+="\n";
                 }
@@ -98,12 +101,9 @@ public class QueryProcessorImpl implements QueryProcessor {
                 throw  new TableAlreadyExistingException();
             }
         } catch (IOException e) {
-            return false;
+            throw new NoDatabaseSelected("no database was selected");
         }
     }
-
-
-
 
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
@@ -132,13 +132,13 @@ public class QueryProcessorImpl implements QueryProcessor {
             if (totalColsInTable == rowArray.length){
                 // check if PK value is already in table
                 if (!pkValues.contains(rowArray[0])) {
-                    FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + ".txt", true);
+                    FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY+dbName +"/" + tableName + ".txt",true);
                     String rowLine = "";
-                    for (String row : rowArray) {
+                    for ( String row: rowArray){
 
-                        rowLine += row + "|";
+                        rowLine+= row + "|";
                     }
-                    rowLine = rowLine.substring(0, rowLine.length() - 1) + "\n";
+                    rowLine = rowLine.substring(0,rowLine.length()-1) + "\n";
                     fileWriter.write(rowLine);
                     fileWriter.flush();
                     fileWriter.close();
@@ -163,8 +163,6 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         return true;
     }
-
-
 
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
