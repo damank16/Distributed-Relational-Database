@@ -6,7 +6,7 @@ public class LogTest {
 
     @Test
     public void addGeneralLog(){
-        log.addGeneralLog(12, 1, 1, "VM1", "user1", "db1");
+        log.addGeneralLog(12, 1,"VM1", "user1", "db1", "sql dump generated successfully");
     }
 
     @Test

@@ -30,10 +30,9 @@ public class Log {
         return String.join(" | ", message);
     }
 
-    public void addGeneralLog(int executionTime, int numberOfRecords, int numberOfTables, String virtualMachine, String user, String dbName) {
-        String message = createMessage(getTimeStamp(), user, Integer.toString(executionTime), Integer.toString(numberOfRecords),
-                Integer.toString(numberOfTables), virtualMachine, dbName);
-        fileUtility.writeDataToFile("general", message);
+    public void addGeneralLog(long executionTime, int numberOfTables, String virtualMachine, String user, String dbName, String message) {
+        String record = createMessage(getTimeStamp(), Long.toString(executionTime), user, Integer.toString(numberOfTables), virtualMachine, dbName, message);
+        fileUtility.writeDataToFile("general", record);
     }
 
     public void addEventLog(String databaseName, String transactionId, boolean crashReports, String virtualMachine, String user) {
