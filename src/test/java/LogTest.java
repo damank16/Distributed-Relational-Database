@@ -2,7 +2,7 @@ import Logger.Log;
 import org.junit.jupiter.api.Test;
 
 public class LogTest {
-    Log log = new Log();
+    Log log = Log.getLogInstance();
 
     @Test
     public void addGeneralLog(){

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class SQLDumpExportController {
 
-    Log log = new Log();
+    Log log = Log.getLogInstance();
     public boolean generateDump(String databaseName) throws SQLDumpGenratorException {
         StringBuilder databasePath = new StringBuilder(Constants.BASE_PATH_DIRECTORY);
         if (isDatabaseExists(databaseName, databasePath)) {
