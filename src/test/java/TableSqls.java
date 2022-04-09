@@ -9,7 +9,7 @@ public class TableSqls {
     QueryParser queryParser = new QueryParser();
 
 //    @Test
-//    public void testCreateDatabase(){
+//    public void testCreateDatabase() throws IOException {
 //        Assertions.assertTrue(queryParser.parseQuery("create database a"));
 //    }
 //    @Test
@@ -20,34 +20,34 @@ public class TableSqls {
 //    }
 //
 //    @Test
-//    public void testInsertSql(){
+//    public void testInsertSql() throws IOException {
 //        queryParser.parseQuery("use database a");
 //        queryParser.parseQuery("insert into person() values (1,\"a\",\"ab\")");
 //        queryParser.parseQuery("insert into person() values (2,\"ab\",\"ab\")");
 //    }
 //
 //    @Test
-//    public void testSelectSql(){
+//    public void testSelectSql() throws IOException {
 //        queryParser.parseQuery("use database a");
 //        queryParser.parseQuery("select * from person where name = \"a\"");
 //
 //    }
 //    @Test
-//    public void testUpdateSql(){
+//    public void testUpdateSql() throws IOException {
 //        queryParser.parseQuery("use database a");
 //        queryParser.parseQuery("update person set address = \"c\" where name = \"a\"");
 //        queryParser.parseQuery("select * from person where name = \"a\"");
 //
 //    }
 //    @Test
-//    public void testDeleteSql(){
+//    public void testDeleteSql() throws IOException {
 //        queryParser.parseQuery("use database a");
 //        queryParser.parseQuery("delete from person where name = \"a\"");
 //
 //    }
 //
 //    @Test
-//    public void testDropTableSql(){
+//    public void testDropTableSql() throws IOException {
 //        queryParser.parseQuery("use database a");
 //        queryParser.parseQuery("drop table item");
 //        queryParser.parseQuery("drop table person");
@@ -55,7 +55,7 @@ public class TableSqls {
 //    }
 //
 //    @Test
-//    public void testDropDatabase(){
+//    public void testDropDatabase() throws IOException {
 //        Assertions.assertTrue(queryParser.parseQuery("drop database a"));
 //    }
 
