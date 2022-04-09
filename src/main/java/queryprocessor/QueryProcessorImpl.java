@@ -78,6 +78,9 @@ public class QueryProcessorImpl implements QueryProcessor {
                     if (column.isPk()){
                         metadata+="|PK";
                     }
+                    else{
+                        metadata+="|";
+                    }
 
                     if (column.isFk()){
                         metadata+="|FK|"+ column.getForeignKeyTable().getName() +"|" + column.getForeignKeyTableCol().getName();

@@ -2,6 +2,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import queryprocessor.QueryParser;
 
+import java.io.IOException;
+
 
 public class TableSqls {
     QueryParser queryParser = new QueryParser();
@@ -11,9 +13,9 @@ public class TableSqls {
 //        Assertions.assertTrue(queryParser.parseQuery("create database a"));
 //    }
 //    @Test
-//    public void testCreateSql(){
+//    public void testCreateSql() throws IOException {
 //        queryParser.parseQuery("use database a");
-//        queryParser.parseQuery("create table person (id int, name varchar(255), address varchar(255), PRIMARY KEY (id))");
+//        queryParser.parseQuery("create table person (id int, name varchar(255), address varchar(255), PRIMARY KEY (id), FOREIGN KEY (name) REFERENCES Persons (name))");
 //        queryParser.parseQuery("create table item (id int, price float)");
 //    }
 //
