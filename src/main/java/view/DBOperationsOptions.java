@@ -1,5 +1,8 @@
 package view;
 
+import Analysis.AnalysisMenuDriven;
+import Analysis.FileOps;
+import Logger.Log;
 import Util.Printer;
 import exceptions.SQLDumpGenratorException;
 import features.controller.SQLDumpExportController;
@@ -14,6 +17,7 @@ public class DBOperationsOptions {
 
     private  Session userSession;
     public static boolean isDistributed;
+    private Log log = Log.getLogInstance();
     public DBOperationsOptions(Session userSession) {
         this.userSession = userSession;
     }
@@ -48,6 +52,7 @@ public class DBOperationsOptions {
                             }
                         }
                         catch (Exception e){
+
                             Printer.printContent(e.getMessage());
                         }
                     }
@@ -61,12 +66,20 @@ public class DBOperationsOptions {
                     try {
                         sqlDumpExportController.generateDump(databaseName);
                     } catch (SQLDumpGenratorException e) {
+
                         Printer.printContent(e.toString());
                     }
                     break;
                 case "3":
                     break;
                 case "4":
+                    AnalysisMenuDriven analysisMenuDriven = new AnalysisMenuDriven();
+                    try{
+                        analysisMenuDriven.analytics_input();
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
                     break;
                 case "5":
                     userSession.destroyDBUserSession();

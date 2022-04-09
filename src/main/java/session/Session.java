@@ -28,4 +28,5 @@ public class Session {
     public void destroyDBUserSession() {
         this.user = null;
     }
+
 }

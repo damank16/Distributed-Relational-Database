@@ -16,6 +16,6 @@ public class LogTest {
 
     @Test
     public void addQueryLog(){
-        log.addQueryLog("db1", "select * from user", "select", "user1", "vm1", "table1");
+        log.addQueryLog("db1", "select * from user", "delete", "user1", "vm1", "table1");
     }
 }

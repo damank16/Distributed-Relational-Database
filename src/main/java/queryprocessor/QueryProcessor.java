@@ -5,23 +5,23 @@ import entities.Table;
 public interface QueryProcessor {
 
 
-    boolean createDatabase(String name);
+    boolean createDatabase(String query,String name);
 
-    boolean dropDatabase(String name);
+    boolean dropDatabase(String query,String name);
 
-    boolean createTable(String databaseName,Table table);
+    boolean createTable(String query,String databaseName,Table table);
 
-    boolean insertIntoTable(String databaseName,String tableName, String rowValues);
+    boolean insertIntoTable(String query,String databaseName,String tableName, String rowValues);
 
-    boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue);
+    boolean selectFromTable(String query,String databaseName,String tableName, String whereColumn, String whereValue);
 
-    boolean useDatabase(String s);
+    boolean useDatabase(String query,String s);
 
-    boolean dropTable(String database, String tableName);
+    boolean dropTable(String query,String database, String tableName);
 
-    boolean deletefromTable(String database, String tableName, String whereColumn, String whereValue);
+    boolean deletefromTable(String query,String database, String tableName, String whereColumn, String whereValue);
 
-    boolean updateTable(String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue);
+    boolean updateTable(String query,String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue);
 
-    void simpleSelectFromTable(String database, String tableName);
+    void simpleSelectFromTable(String query,String database, String tableName);
 }
