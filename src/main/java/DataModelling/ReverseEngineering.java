@@ -1,15 +1,27 @@
 package DataModelling;
 
-import Util.FileUtility;
+
+import Logger.Log;
+import exceptions.NoSuchDatabaseObject;
+import session.Session;
 
 import java.io.*;
 
 import static Util.Constants.BASE_PATH_DIRECTORY;
+import static replication.SFTP.REMOTE_HOST;
 
 public class ReverseEngineering {
+    Log log = Log.getLogInstance();
+    public static final String metadata = "metadata";
+    public static final String database = "database";
 
-    public void readTable() {
-        File directory=new File("./a/metadata");
+    private String createFilePath(String... file) {
+        return String.join(File.separator, file);
+    }
+
+    public void readTables(String databaseName) {
+        String databasePath = createFilePath(BASE_PATH_DIRECTORY, database, databaseName, metadata);
+        File directory=new File(databasePath);
         if(directory.exists()) {
             int fileCount = directory.list().length;
             File[] f = directory.listFiles();
@@ -43,6 +55,10 @@ public class ReverseEngineering {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }else {
+            String user = Session.getInstance().getLoggedInDBUser().getUserName();
+//            log.addEventLog(databaseName, "", true, REMOTE_HOST, user);
+            throw  new NoSuchDatabaseObject("No such database");
         }
     }
 }

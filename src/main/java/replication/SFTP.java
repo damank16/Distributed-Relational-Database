@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class SFTP {
-    private static final String REMOTE_HOST = "34.152.36.90";
+    public static final String REMOTE_HOST = "34.152.36.90";
 //    private static final String REMOTE_HOST = "35.203.108.224";
     private static final String USERNAME = "rsa-key-20220409";
     private static final int REMOTE_PORT = 22;

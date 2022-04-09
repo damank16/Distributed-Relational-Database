@@ -6,16 +6,16 @@ public class LogTest {
 
     @Test
     public void addGeneralLog(){
-        log.addGeneralLog(12, 1,"VM1", "user1", "db1", "sql dump generated successfully");
+        log.addGeneralLog(12, 1, 5, "VM1", "user1", "db1", "sql dump generated successfully");
     }
 
     @Test
-    public void addEventLog(){
-        log.addEventLog("db1", "t01", false, "vm1", "user1");
+    public void addEventLog() {
+        log.addEventLog("db1",  "vm1", "user1", "exception - data doesn't exist");
     }
 
     @Test
     public void addQueryLog(){
-        log.addQueryLog("db1", true, "select * from user", "select", "user1", "vm1", "table1");
+        log.addQueryLog("db1", "select * from user", "select", "user1", "vm1", "table1");
     }
 }
