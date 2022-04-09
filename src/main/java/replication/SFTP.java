@@ -7,9 +7,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class SFTP {
-//    private static final String REMOTE_HOST = "34.71.24.52";
-    private static final String REMOTE_HOST = "34.152.57.185";
-    private static final String USERNAME = "rsa-key-20220408";
+    private static final String REMOTE_HOST = "34.152.36.90";
+//    private static final String REMOTE_HOST = "35.203.108.224";
+    private static final String USERNAME = "rsa-key-20220409";
     private static final int REMOTE_PORT = 22;
     private static final int SESSION_TIMEOUT = 10000;
     private static final int CHANNEL_TIMEOUT = 5000;
@@ -28,8 +28,8 @@ public class SFTP {
             jschSession.setConfig(config);
 
 //             authenticate using private key
-            jsch.addIdentity("keys\\private_key_5_open.ppk");
-//            jsch.addIdentity("/home/elizabethj596/keys/private_key_5_open.ppk");
+            jsch.addIdentity("keys\\private_key_7_open.ppk");
+//            jsch.addIdentity("/home/elizabethj596/private_key_7_open.ppk");
 
             // authenticate using password
 //            jschSession.setPassword(PASSWORD);
@@ -73,7 +73,7 @@ public class SFTP {
     private void removeDirectory(ChannelSftp channelSftp, String file, boolean isMetaData) throws SftpException {
 
         // String localFile = "E:\\Winter22\\Data\\project\\distributed_database\\a\\item.txt";
-        String remoteFile = "/home/rsa-key-20220407/" + file;
+        String remoteFile = "/home/rsa-key-20220409/" + file;
 
         channelSftp.rm(remoteFile + "/metadata/*");
         channelSftp.rmdir(remoteFile + "/metadata");
@@ -94,7 +94,7 @@ public class SFTP {
             location = dbName + "/" + fileName;
         }
         // String localFile = "E:\\Winter22\\Data\\project\\distributed_database\\a\\item.txt";
-        String remoteFile = "/home/rsa-key-20220407/" + location;
+        String remoteFile = "/home/rsa-key-20220409/" + location;
 
         channelSftp.rm(remoteFile);
     }
@@ -121,7 +121,7 @@ public class SFTP {
             dbName = pathArray[pathArray.length - 2];
             location = dbName + "/" + fileName;
         }
-        String remoteFile = "/home/rsa-key-20220407/" + location;
+        String remoteFile = "/home/rsa-key-20220409/" + location;
 
         channelSftp.put(localFile, remoteFile);
     }
