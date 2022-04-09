@@ -78,6 +78,9 @@ public class QueryProcessorImpl implements QueryProcessor {
                     if (column.isPk()){
                         metadata+="|PK";
                     }
+                    else{
+                        metadata+="|";
+                    }
 
                     if (column.isFk()){
                         metadata+="|FK|"+ column.getForeignKeyTable().getName() +"|" + column.getForeignKeyTableCol().getName();
@@ -104,6 +107,9 @@ public class QueryProcessorImpl implements QueryProcessor {
             throw new NoDatabaseSelected("no database was selected");
         }
     }
+
+
+
 
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
@@ -163,6 +169,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         return true;
     }
+
+
 
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
