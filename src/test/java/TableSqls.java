@@ -27,6 +27,38 @@ public class TableSqls {
     }
 
     @Test
+    public void testCompanyDatabase() throws IOException{
+        queryParser.parseQuery("create database company");
+        queryParser.parseQuery("use database company");
+        queryParser.parseQuery("CREATE TABLE Employee_tax_details (tax_id int, total_tax float, PRIMARY KEY (tax_id))");
+        queryParser.parseQuery("CREATE TABLE Project (proj_id int, dep_id int, Name varchar(255), PRIMARY KEY (proj_id), FOREIGN KEY (dep_id) REFERENCES Department (dep_id))");
+        queryParser.parseQuery("CREATE TABLE Department (dep_id int, Name varchar(255), PRIMARY KEY (dep_id))");
+        queryParser.parseQuery("CREATE TABLE Employee (emp_id int, dep_id int, tax_id int, LastName varchar(255), FirstName varchar(255), City varchar(255), PRIMARY KEY (emp_id), FOREIGN KEY (dep_id) REFERENCES Department (dep_id), FOREIGN KEY (tax_id) REFERENCES Employee_tax_details (tax_id))");
+
+    }
+
+    @Test
+    public void testInsertCompany() throws IOException {
+        queryParser.parseQuery("use database company");
+        queryParser.parseQuery("INSERT INTO Project() VALUES (1,\"Data Analytics\",1)");
+        queryParser.parseQuery("INSERT INTO Project() VALUES (2,\"Image processing\",1)");
+        queryParser.parseQuery("INSERT INTO Project() VALUES (3,\"Visual Analytics\",2)");
+        queryParser.parseQuery("INSERT INTO Employee_tax_details() values (1,55.69)");
+        queryParser.parseQuery("INSERT INTO Employee_tax_details() values (2,54.69)");
+        queryParser.parseQuery("INSERT INTO Employee_tax_details() values (3,21.69)");
+        queryParser.parseQuery("INSERT INTO Employee_tax_details() values (4,67.69)");
+        queryParser.parseQuery("INSERT INTO Department() values (1,\"Business\")");
+        queryParser.parseQuery("INSERT INTO Department() values (3,\"Marketing\")");
+        queryParser.parseQuery("INSERT INTO Department() values (4,\"Finance\")");
+        queryParser.parseQuery("INSERT INTO Department() values (5,\"Managment\")");
+        queryParser.parseQuery("INSERT INTO Employee() values (1,3,1,\"John\",\"Doe\",\"Vancouver\")");
+        queryParser.parseQuery("INSERT INTO Employee() values (2,2,2,\"Alice\",\"Bob\",\"Halifax\")");
+        queryParser.parseQuery("INSERT INTO Employee() values (3,2,3,\"Eve\",\"Charlie\",\"Toronto\")");
+        queryParser.parseQuery("INSERT INTO Employee() values (4,1,4,\"Dave\",\"Felix\",\"NY\")");
+
+    }
+
+    @Test
     public void testSelectSql() throws IOException {
         queryParser.parseQuery("use database a");
         queryParser.parseQuery("select * from person where name = \"a\"");
