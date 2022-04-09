@@ -108,6 +108,9 @@ public class QueryProcessorImpl implements QueryProcessor {
         }
     }
 
+
+
+
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
@@ -166,6 +169,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         return true;
     }
+
+
 
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
