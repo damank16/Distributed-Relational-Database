@@ -1,25 +1,27 @@
 package queryprocessor;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 
+import Logger.Log;
 import Util.Constants;
 import entities.Column;
 import entities.Table;
 import exceptions.*;
 import replication.SFTP;
+import session.Session;
 import view.DBOperationsOptions;
 
 public class QueryProcessorImpl implements QueryProcessor {
 
     private SFTP fileTransfer = new SFTP();
+    private Log log = Log.getLogInstance();
+    private String username = Session.getInstance().getLoggedInDBUser().getUserName();;
+    private String VMName = SFTP.REMOTE_HOST;
 
     @Override
-    public boolean createDatabase( String name) {
+    public boolean createDatabase(String query, String name) {
         File directory = new File(Constants.DATABASE_BASE_PATH + name);
         File metaDatadirectory = new File(Constants.DATABASE_BASE_PATH + name + "/metadata/");
         if(!directory.exists()){
@@ -30,6 +32,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 fileTransfer.replicate(name, true, false, true, false, false);
             }
 
+            log.addQueryLog(name,query,Constants.CREATE,username,VMName,"");
             return true;
         }
         else {
@@ -39,12 +42,14 @@ public class QueryProcessorImpl implements QueryProcessor {
     }
 
     @Override
-    public boolean dropDatabase( String name) {
+    public boolean dropDatabase( String query,String name) {
         File directory = new File(Constants.DATABASE_BASE_PATH + name);
         recursivelyDeleteFiles(directory);
         if (DBOperationsOptions.isDistributed) {
             fileTransfer.replicate(name, false, false, false, false, true);
         }
+        log.addQueryLog(name,query,Constants.DROP,username,VMName,"");
+
         return true;
     }
 
@@ -59,7 +64,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     }
 
     @Override
-    public boolean createTable(String dbName,Table table) {
+    public boolean createTable(String query,String dbName,Table table) {
         String tableFile = Constants.DATABASE_BASE_PATH + dbName + "/" + table.getName() + ".txt";
         String tableMetaDataFile = Constants.DATABASE_BASE_PATH + dbName + "/metadata/" + table.getName() + "_metadata.txt";
         File file = new File(tableFile);
@@ -99,6 +104,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                     fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
 
                 }
+                log.addQueryLog(dbName,query,Constants.CREATE,username,VMName,table.getName());
                 return true;
             }else{
                 throw  new TableAlreadyExistingException();
@@ -112,7 +118,7 @@ public class QueryProcessorImpl implements QueryProcessor {
 
 
     @Override
-    public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
+    public boolean insertIntoTable(String query,String dbName, String tableName, String rowValues) {
         try {
             String tableFile = Constants.DATABASE_BASE_PATH + dbName + "/" + tableName + ".txt";
             String tableMetaDataFile = Constants.DATABASE_BASE_PATH + dbName + "/metadata/" + tableName + "_metadata.txt";
@@ -152,6 +158,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                         fileTransfer.replicate(tableFile, false, true, false, false, false);
                         fileTransfer.replicate(tableMetaDataFile, true, true, false, false, false);
                     }
+                    log.addQueryLog(dbName,query,Constants.INSERT,username,VMName,tableName);
                 }
                 else{
                     throw new PrimaryKeyContraintViolationException("Duplicate primary key");
@@ -173,7 +180,7 @@ public class QueryProcessorImpl implements QueryProcessor {
 
 
     @Override
-    public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
+    public boolean selectFromTable(String query,String databaseName,String tableName, String whereColumn, String whereValue) {
         try{
             String fileName = Constants.DATABASE_BASE_PATH + databaseName + "/" + tableName + ".txt";
             List<List<String>> result = new LinkedList<>();
@@ -196,17 +203,19 @@ public class QueryProcessorImpl implements QueryProcessor {
 
         }
         catch (IOException e){
-            e.printStackTrace();
+           throw new NoSuchDatabaseObject("no table found");
         }
 
+        log.addQueryLog(databaseName,query,Constants.SELECT,username,VMName,tableName);
         return true;
     }
 
     @Override
-    public boolean useDatabase(String name) {
+    public boolean useDatabase(String query,String name) {
         File directory = new File(Constants.DATABASE_BASE_PATH + name);
         if (directory.exists()){
             QueryParser.database = name;
+            log.addQueryLog(name,query,Constants.USE,username,VMName,"");
             return true;
         }
         else {
@@ -215,7 +224,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     }
 
     @Override
-    public boolean dropTable(String database, String tableName) {
+    public boolean dropTable(String query,String database, String tableName) {
         String fileName = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
         String metadataFileName = Constants.DATABASE_BASE_PATH + database + "/metadata/" + tableName + "_metadata.txt";
         File file = new File(fileName);
@@ -227,6 +236,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 fileTransfer.replicate(fileName, false, false, false, true, false);
                 fileTransfer.replicate(metadataFileName, true, false, false, true, false);
             }
+            log.addQueryLog(database,query,Constants.DROP,username,VMName,tableName);
             return true;
         }
         else {
@@ -236,7 +246,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     }
 
     @Override
-    public boolean deletefromTable(String database, String tableName, String whereColumn, String whereValue) {
+    public boolean deletefromTable(String query,String database, String tableName, String whereColumn, String whereValue) {
         String tableFile = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
         String tableMetaDataFile = Constants.DATABASE_BASE_PATH + database + "/metadata/" + tableName + "_metadata.txt";
 
@@ -272,14 +282,14 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
         }
         catch (IOException e){
-            e.printStackTrace();
+           throw new NoSuchDatabaseObject("no such table");
         }
-
+        log.addQueryLog(database,query,Constants.DELETE,username,VMName,tableName);
         return true;
     }
 
     @Override
-    public boolean updateTable(String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue) {
+    public boolean updateTable(String query,String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue) {
         String tableFile = Constants.DATABASE_BASE_PATH + database + "/" + tableName+ ".txt";
         String tableMetaDataFile = Constants.DATABASE_BASE_PATH + database + "/metadata/" + tableName + "_metadata.txt";
 
@@ -319,14 +329,15 @@ public class QueryProcessorImpl implements QueryProcessor {
             }
         }
         catch (IOException e){
-            e.printStackTrace();
+            throw new NoSuchDatabaseObject("no such table");
         }
 
+        log.addQueryLog(database,query,Constants.UPDATE,username,VMName,tableName);
         return true;
     }
 
     @Override
-    public void simpleSelectFromTable(String database, String tableName) {
+    public void simpleSelectFromTable(String query,String database, String tableName) {
         try{
             String fileName = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
             List<List<String>> rows = getRowsOfTable(fileName);
