@@ -119,7 +119,32 @@ public class QueryParser {
                             Column pkColumn = columns.stream().filter(c -> c.getName().equals(pkCol)).findFirst().orElse(null);
                             if (pkColumn != null) {
                                 pkColumn.setPk(true);
-                                break;
+                                continue;
+                            }
+                        }
+
+                        //FOREIGN KEY (PersonID) REFERENCES Persons (PersonID)
+
+                        if (col.contains("foreign key")){
+                            int indexOfOpenParan = col.indexOf("(");
+                            int indexOfCloseParan = col.indexOf(")");
+                            String fkCol = col.substring(indexOfOpenParan + 1, indexOfCloseParan);
+                            Column fkColumn = columns.stream().filter(c -> c.getName().equals(fkCol)).findFirst().orElse(null);
+
+                            String colArray[] = col.split("\\s+");
+
+                            if (fkColumn != null) {
+                                fkColumn.setFk(true);
+                                Table fktable = new Table();
+                                fktable.setName(colArray[4]);
+
+                                Column fkTableFkCol = new Column();
+                                String fkColName = colArray [5].replace("(","");
+                                fkColName = fkColName.replace(")","");
+                                fkTableFkCol.setName(fkColName);
+                                fkColumn.setForeignKeyTable(fktable);
+                                fkColumn.setForeignKeyTableCol(fkTableFkCol);
+                                continue;
                             }
                         }
 

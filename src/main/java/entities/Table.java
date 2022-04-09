@@ -6,6 +6,10 @@ public class Table {
     private String name;
     private Set<Column> columnNames;
 
+    public Table(){
+
+    }
+
     public Table(String name, Set<Column> columnNames) {
         this.name = name;
         this.columnNames = columnNames;
