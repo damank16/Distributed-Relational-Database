@@ -1,5 +1,7 @@
 package view;
 
+import Analysis.AnalysisMenuDriven;
+import Analysis.FileOps;
 import Logger.Log;
 import Util.Printer;
 import exceptions.SQLDumpGenratorException;
@@ -71,6 +73,13 @@ public class DBOperationsOptions {
                 case "3":
                     break;
                 case "4":
+                    AnalysisMenuDriven analysisMenuDriven = new AnalysisMenuDriven();
+                    try{
+                        analysisMenuDriven.analytics_input();
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
                     break;
                 case "5":
                     userSession.destroyDBUserSession();
