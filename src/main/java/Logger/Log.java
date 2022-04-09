@@ -11,12 +11,21 @@ import java.time.format.DateTimeFormatter;
 public class Log {
     FileUtility fileUtility = new FileUtility();
     public static final String log = "log";
+    private static Log logInstance = null;
 
-    public Log() {
+    private Log() {
         File directory = new File(Constants.BASE_PATH_DIRECTORY + log);
         if(!directory.exists()) {
             directory.mkdir();
         }
+    }
+
+    public static Log getLogInstance() {
+        if(logInstance == null) {
+            logInstance = new Log();
+        }
+        return logInstance;
+
     }
 
     private String getTimeStamp() {
