@@ -10,10 +10,7 @@ import java.util.*;
 import Util.Constants;
 import entities.Column;
 import entities.Table;
-import exceptions.DatabaseAlreadyExistingException;
-import exceptions.NoSuchDatabaseObject;
-import exceptions.PrimaryKeyContraintViolationException;
-import exceptions.TableAlreadyExistingException;
+import exceptions.*;
 import replication.SFTP;
 import view.DBOperationsOptions;
 
@@ -63,6 +60,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean createTable(String dbName,Table table) {
+
+        //FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
         String tableFile = Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + ".txt";
         String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt";
         File file = new File(tableFile);
@@ -78,6 +77,10 @@ public class QueryProcessorImpl implements QueryProcessor {
                     metadata+=column.getName() + "|"+ column.getType() + "|" + column.getConstraint();
                     if (column.isPk()){
                         metadata+="|PK";
+                    }
+
+                    if (column.isFk()){
+                        metadata+="|FK|"+ column.getForeignKeyTable().getName() +"|" + column.getForeignKeyTableCol().getName();
                     }
                     metadata+="\n";
                 }
@@ -98,7 +101,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 throw  new TableAlreadyExistingException();
             }
         } catch (IOException e) {
-            return false;
+            throw new NoDatabaseSelected("no database was selected");
         }
     }
 
