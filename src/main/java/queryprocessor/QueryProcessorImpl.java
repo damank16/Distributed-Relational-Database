@@ -20,8 +20,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean createDatabase( String name) {
-        File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
-        File metaDatadirectory = new File(Constants.BASE_PATH_DIRECTORY + name + "/metadata/");
+        File directory = new File(Constants.DATABASE_BASE_PATH + name);
+        File metaDatadirectory = new File(Constants.DATABASE_BASE_PATH + name + "/metadata/");
         if(!directory.exists()){
             directory.mkdir();
             metaDatadirectory.mkdir();
@@ -40,7 +40,7 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean dropDatabase( String name) {
-        File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
+        File directory = new File(Constants.DATABASE_BASE_PATH + name);
         recursivelyDeleteFiles(directory);
         if (DBOperationsOptions.isDistributed) {
             fileTransfer.replicate(name, false, false, false, false, true);
@@ -60,8 +60,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean createTable(String dbName,Table table) {
-        String tableFile = Constants.BASE_PATH_DIRECTORY + dbName + "/" + table.getName() + ".txt";
-        String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + table.getName() + "_metadata.txt";
+        String tableFile = Constants.DATABASE_BASE_PATH + dbName + "/" + table.getName() + ".txt";
+        String tableMetaDataFile = Constants.DATABASE_BASE_PATH + dbName + "/metadata/" + table.getName() + "_metadata.txt";
         File file = new File(tableFile);
         File metadataFile = new File(tableMetaDataFile);
 
@@ -114,15 +114,15 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean insertIntoTable(String dbName, String tableName, String rowValues) {
         try {
-            String tableFile = Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + ".txt";
-            String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + tableName + "_metadata.txt";
+            String tableFile = Constants.DATABASE_BASE_PATH + dbName + "/" + tableName + ".txt";
+            String tableMetaDataFile = Constants.DATABASE_BASE_PATH + dbName + "/metadata/" + tableName + "_metadata.txt";
 
-            Path path = Paths.get(Constants.BASE_PATH_DIRECTORY + dbName + "/metadata/" + tableName + "_metadata.txt");
+            Path path = Paths.get(Constants.DATABASE_BASE_PATH + dbName + "/metadata/" + tableName + "_metadata.txt");
             // number of columns in table
             long totalColsInTable = Files.lines(path).count();
 
             // get existing rows from table to check uniqueness on PK
-            String fileName = Constants.BASE_PATH_DIRECTORY + dbName + "/" + tableName + ".txt";
+            String fileName = Constants.DATABASE_BASE_PATH + dbName + "/" + tableName + ".txt";
             List<List<String>> existingRows = getRowsOfTable(fileName);
 
             // add existing Pk values to a list
@@ -138,7 +138,7 @@ public class QueryProcessorImpl implements QueryProcessor {
             if (totalColsInTable == rowArray.length){
                 // check if PK value is already in table
                 if (!pkValues.contains(rowArray[0])) {
-                    FileWriter fileWriter = new FileWriter(Constants.BASE_PATH_DIRECTORY+dbName +"/" + tableName + ".txt",true);
+                    FileWriter fileWriter = new FileWriter(Constants.DATABASE_BASE_PATH+dbName +"/" + tableName + ".txt",true);
                     String rowLine = "";
                     for ( String row: rowArray){
 
@@ -175,7 +175,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public boolean selectFromTable(String databaseName,String tableName, String whereColumn, String whereValue) {
         try{
-            String fileName = Constants.BASE_PATH_DIRECTORY + databaseName + "/" + tableName + ".txt";
+            String fileName = Constants.DATABASE_BASE_PATH + databaseName + "/" + tableName + ".txt";
             List<List<String>> result = new LinkedList<>();
             List<List<String>> rows = getRowsOfTable(fileName);
             List<String> headerRow = rows.get(0);
@@ -204,7 +204,7 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean useDatabase(String name) {
-        File directory = new File(Constants.BASE_PATH_DIRECTORY + name);
+        File directory = new File(Constants.DATABASE_BASE_PATH + name);
         if (directory.exists()){
             QueryParser.database = name;
             return true;
@@ -216,8 +216,8 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean dropTable(String database, String tableName) {
-        String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
-        String metadataFileName = Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt";
+        String fileName = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
+        String metadataFileName = Constants.DATABASE_BASE_PATH + database + "/metadata/" + tableName + "_metadata.txt";
         File file = new File(fileName);
         if (file.exists()) {
             file.delete();
@@ -237,11 +237,11 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean deletefromTable(String database, String tableName, String whereColumn, String whereValue) {
-        String tableFile = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
-        String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt";
+        String tableFile = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
+        String tableMetaDataFile = Constants.DATABASE_BASE_PATH + database + "/metadata/" + tableName + "_metadata.txt";
 
         try {
-            String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
+            String fileName = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
             List<List<String>> result = new LinkedList<>();
             List<List<String>> rows = getRowsOfTable(fileName);
             List<String> headerRow = rows.get(0);
@@ -280,12 +280,12 @@ public class QueryProcessorImpl implements QueryProcessor {
 
     @Override
     public boolean updateTable(String database, String tableName, String updateColumn, String updateValue, String whereColumn, String whereValue) {
-        String tableFile = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName+ ".txt";
-        String tableMetaDataFile = Constants.BASE_PATH_DIRECTORY + database + "/metadata/" + tableName + "_metadata.txt";
+        String tableFile = Constants.DATABASE_BASE_PATH + database + "/" + tableName+ ".txt";
+        String tableMetaDataFile = Constants.DATABASE_BASE_PATH + database + "/metadata/" + tableName + "_metadata.txt";
 
         try {
 
-            String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
+            String fileName = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
             List<List<String>> result = new LinkedList<>();
             List<List<String>> rows = getRowsOfTable(fileName);
             List<String> headerRow = rows.get(0);
@@ -328,7 +328,7 @@ public class QueryProcessorImpl implements QueryProcessor {
     @Override
     public void simpleSelectFromTable(String database, String tableName) {
         try{
-            String fileName = Constants.BASE_PATH_DIRECTORY + database + "/" + tableName + ".txt";
+            String fileName = Constants.DATABASE_BASE_PATH + database + "/" + tableName + ".txt";
             List<List<String>> rows = getRowsOfTable(fileName);
             List<String> headerRow = rows.get(0);
 
