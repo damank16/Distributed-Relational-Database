@@ -12,8 +12,8 @@ public class ReverseEngineeringTest {
     }
 
     @Test
-    public void addGeneralLog(){
-        re.readTables("a");
+    public void generateERD() {
+        re.readTables("company");
     }
 
 }
