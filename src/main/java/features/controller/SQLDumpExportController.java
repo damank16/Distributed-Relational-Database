@@ -3,6 +3,7 @@ package features.controller;
 import Logger.Log;
 import Util.Constants;
 import exceptions.SQLDumpGenratorException;
+import replication.SFTP;
 import session.Session;
 
 import java.io.*;
@@ -17,9 +18,9 @@ import java.util.regex.Pattern;
 
 public class SQLDumpExportController {
 
-    Log log = Log.getLogInstance();
+    static Log log = Log.getLogInstance();
     public boolean generateDump(String databaseName) throws SQLDumpGenratorException {
-        StringBuilder databasePath = new StringBuilder(Constants.BASE_PATH_DIRECTORY);
+        StringBuilder databasePath = new StringBuilder(Constants.DATABASE_BASE_PATH);
         if (isDatabaseExists(databaseName, databasePath)) {
             File databaseDirectory = new File(databasePath.toString());
             File[] files = databaseDirectory.listFiles();
@@ -91,11 +92,8 @@ public class SQLDumpExportController {
             sqlFileWriter.close();
             long endTime = System.currentTimeMillis();
             long executionTime = (endTime-startTime) ;
-            Log log = new Log();
             String message = "Success: SQL Dump generated for database";
-            InetAddress ip = InetAddress.getLocalHost();
-            String hostname = ip.getHostName();
-            log.addGeneralLog(executionTime,noOfTables,hostname, Session.getInstance().getLoggedInDBUser().getUserName(),databaseName,message);
+            log.addGeneralLog(executionTime,noOfTables,0, SFTP.REMOTE_HOST, Session.getInstance().getLoggedInDBUser().getUserName(),databaseName,message);
         } catch (IOException e) {
             String message = "Error: { " + e.getMessage() + " }!";
             throw new SQLDumpGenratorException(e.getMessage());
@@ -131,7 +129,7 @@ public class SQLDumpExportController {
                 .append(" ").append("TABLE")
                 .append(" ").append(tableName)
                 .append(" ").append("(");
-        File metaDataDirectory = new File(Constants.BASE_PATH_DIRECTORY +databaseName+ "/metadata");
+        File metaDataDirectory = new File(Constants.DATABASE_BASE_PATH +databaseName+ "/metadata");
         File[] allMetaDataFiles = metaDataDirectory.listFiles();
         for (File metaDataFile : allMetaDataFiles) {
             if (!metaDataFile.getName().contains(tableName)) {

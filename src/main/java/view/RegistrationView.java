@@ -1,11 +1,13 @@
 package view;
 
 
+import Logger.Log;
 import Util.Constants;
 import Util.Printer;
 import Util.SecurityQuestions;
 import entities.DBUser;
 import features.controller.RegistrationController;
+import replication.SFTP;
 
 
 import java.util.HashMap;
@@ -14,11 +16,16 @@ import java.util.Scanner;
 
 public class RegistrationView {
 
+    static Log log = Log.getLogInstance();
     public void registerUser() {
+        long startTime = System.currentTimeMillis();
         DBUser user = createDBUserObject();
         RegistrationController controller = new RegistrationController();
+
         if(controller.registerUser(user))
         {
+            long endTime = System.currentTimeMillis();
+            log.addGeneralLog(endTime- startTime,0,0, SFTP.REMOTE_HOST,user.getUserName(),"", "Registration successfull");
             Printer.printContent(String.format(Constants.USER_REGISTRATION_SUCCESS_MSG,user.getUserName()));
             return;
         }
