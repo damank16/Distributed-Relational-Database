@@ -100,7 +100,7 @@ public class TableSqls {
         Assertions.assertTrue(queryParser.parseQuery("drop database a"));
     }
 
-    @Test
+    /*@Test
     public void testCompanyDatabase() throws IOException{
         queryParser.parseQuery("create database company");
         queryParser.parseQuery("use database company");
@@ -130,7 +130,7 @@ public class TableSqls {
         queryParser.parseQuery("INSERT INTO Employee() values (3,2,3,\"Eve\",\"Charlie\",\"Toronto\")");
         queryParser.parseQuery("INSERT INTO Employee() values (4,1,4,\"Dave\",\"Felix\",\"NY\")");
 
-    }
+    }*/
 
     @Test
     public void testSelect()throws IOException {
