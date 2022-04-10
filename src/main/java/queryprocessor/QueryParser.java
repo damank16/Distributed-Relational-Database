@@ -2,6 +2,7 @@ package queryprocessor;
 
 import Logger.Log;
 import Util.Constants;
+import Util.Printer;
 import entities.Column;
 import entities.Datatype;
 import entities.Table;
@@ -106,7 +107,6 @@ public class QueryParser {
             if (checkFileExists(transactionFilePath)) {
                 return writeIntoFile(transactionFilePath, inputQuery);
             } else {
-                try {
                     int indexOfFirstParanthesis = inputQuery.indexOf("(");
                     int indexOfLastParanthesis = inputQuery.lastIndexOf(")");
                     if (indexOfFirstParanthesis == -1 || indexOfLastParanthesis == -1) {
@@ -182,9 +182,6 @@ public class QueryParser {
                     }
                     Table table = new Table(tableName, columns);
                     queryProcessor.createTable(inputQuery, database, table);
-                } catch (ImproperQuerySyntaxException e) {
-                    e.printStackTrace();
-                }
                 return true;
             }
         } else if (insertTablePattern.matcher(inputQuery).find()) {
@@ -280,9 +277,9 @@ public class QueryParser {
                 File transactionFile = new File(transactionFilePath);
 
                 if (transactionFile.exists()) {
-                    System.out.println("File already exists!");
+                    Printer.printContent("File already exists!");
                 } else {
-                    System.out.println("File created!");
+                    Printer.printContent("File created!");
                     transactionFile.createNewFile();
                 }
 
@@ -295,10 +292,10 @@ public class QueryParser {
                 File transactionFile = new File(transactionFilePath);
 
                 if (transactionFile.exists()) {
-                    System.out.println("File exists and is deleted!");
+                    Printer.printContent("File exists and is deleted!");
                     transactionFile.delete();
                 } else {
-                    System.out.println("File doesn't exists!");
+                    Printer.printContent("File doesn't exists!");
                 }
                 return true;
             } else {
@@ -322,11 +319,11 @@ public class QueryParser {
                     }
                     return true;
                 } else {
-                    System.out.println("There is no ongoing transition");
+                    Printer.printContent("There is no ongoing transition");
                     return false;
                 }
             } else {
-                System.out.println("Invalid Query!!");
+                Printer.printContent("Invalid Query!!");
                 return false;
             }
         } else {

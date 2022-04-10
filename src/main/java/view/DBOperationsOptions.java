@@ -75,18 +75,18 @@ public class DBOperationsOptions {
                     }
                     break;
                 case "3":
-                    System.out.println("Please enter database name");
+                    Printer.printContent("Please enter database name");
                     File directory = new File(BASE_PATH_DIRECTORY + "/database");
                     File[] fileList = directory.listFiles();
                     int count = 1;
                     for (File file : fileList) {
-                        System.out.println(count + ". " + file.getName());
+                        Printer.printContent(count + ". " + file.getName());
                         count++;
                     }
                     int dbName = scanner.nextInt();
                     ReverseEngineering re = new ReverseEngineering();
                     re.readTables(fileList[dbName - 1].getName());
-                    System.out.println("ERD generated in data/ERD.txt file");
+                    Printer.printContent("ERD generated in data/ERD.txt file");
                     break;
                 case "4":
                     AnalysisMenuDriven analysisMenuDriven = new AnalysisMenuDriven();
