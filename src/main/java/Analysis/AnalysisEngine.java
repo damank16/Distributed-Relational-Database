@@ -33,7 +33,7 @@ public class AnalysisEngine {
             Map<String, String> query = new HashMap();
             query = consolidated_queries.get(i);
             if (query.get("query_type").equals(("insert"))) {
-                if (!insert_count.containsKey(query.get("database_name") + " " + query.get("table_name"))) {
+                if(!insert_count.containsKey(query.get("database_name") + " " + query.get("table_name"))) {
                     insert_count.put(query.get("database_name") + " " + query.get("table_name"), 1);
                 } else {
                     insert_count.put(query.get("database_name") + " " + query.get("table_name"), insert_count.get(query.get("database_name") + " " + query.get("table_name")) + 1);
