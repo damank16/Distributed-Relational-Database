@@ -28,7 +28,6 @@ public class LoginView {
         String password = sc.nextLine();
 
         int questionIndex = SecurityQuestions.getRandomSecurityQuestionIndex();
-        System.out.println(questionIndex);
         String securityQuestion = SecurityQuestions.getQuestionByIndex(questionIndex);
         Printer.printContent(securityQuestion);
         String securityAnswer = sc.nextLine();
