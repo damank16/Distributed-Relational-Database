@@ -11,7 +11,7 @@ public class AnalysisEngine {
     static int create;
     static int delete;
     public static List<Map<String, String>> consolidated_queries = new ArrayList<>();
-    static int total_query_count;
+    public int total_query_count;
 
     public List<Map<String, String>> generateAnalysis(ArrayList<String[]> values,String[] head) {
 
@@ -22,7 +22,6 @@ public class AnalysisEngine {
             for (int j = 0; j < head.length; j++) {
                 row.put(head[j], single_value[j]);
             }
-            System.out.println(row);
             total_query_count++;
             consolidated_queries.add(row);
         }
@@ -59,7 +58,6 @@ public class AnalysisEngine {
             }
 
         }
-        System.out.println(update_count);
 
         return update_count;
 

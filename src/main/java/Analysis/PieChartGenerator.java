@@ -1,24 +1,25 @@
 package Analysis;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
-import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class PieChartGenerator extends ApplicationFrame {
+public class PieChartGenerator extends JFrame {
     public static Map<String,Integer> map = new HashMap<>();
     public static int total_queries;
-    public PieChartGenerator( String title, Map<String,Integer> maps, int total ) {
-        super( "Query Comparison" );
+    public static String title;
+    public PieChartGenerator( String titles, Map<String,Integer> maps, int total,String Title ) {
+        super( "Query Comparison "+Title );
+        title = Title;
         map = maps;
         total_queries= total;
         setContentPane(createDemoPanel( ));
@@ -40,8 +41,9 @@ public class PieChartGenerator extends ApplicationFrame {
     }
 
     private static JFreeChart createChart( PieDataset dataset ) {
+        String str = "Query Comparison"+title;
         JFreeChart chart = ChartFactory.createPieChart(
-                "Query Comparison",   // chart title
+                "Query Comparison "+title,   // chart title
                 dataset,          // data
                 true,             // include legend
                 true,
@@ -55,10 +57,12 @@ public class PieChartGenerator extends ApplicationFrame {
         return new ChartPanel( chart );
     }
 
-    public void show_graph(Map<String,Integer> maps, int total) {
-        PieChartGenerator demo = new PieChartGenerator( "Query Comparison", maps, total );
+    public void show_graph(Map<String,Integer> maps, int total,String title) {
+        PieChartGenerator demo = new PieChartGenerator( "Query Comparison ", maps, total,title);
         demo.setSize( 560 , 367 );
         RefineryUtilities.centerFrameOnScreen( demo );
+        //demo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        demo.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         demo.setVisible( true );
     }
 }
