@@ -23,6 +23,7 @@ public class AnalysisMenuDriven {
     Map<String,Integer> insert_map = new HashMap<>();
     Map<String,Integer> update_map = new HashMap<>();
     Map<String,Integer> delete_map = new HashMap<>();
+    Map<String,Integer> select_map = new HashMap<>();
     Map<String,Integer> count_queries = new HashMap<>();
     public void analytics_input() throws Exception
     {
@@ -56,8 +57,8 @@ public class AnalysisMenuDriven {
                             fileOps.file_writer("Total "+ entry.getValue() + " updates performed on " +  dbKeyArray [1]+"\n");
                         }
                     }
-                    //System.out.println("Total "+" "+update_map.get(database_name)+" update queries in "+ database_name);
-//                pieComponent.generate_pie(count_update+" "+ database_name);
+                    PieChartGenerator pieChartGenerator = new PieChartGenerator("Query Comparison",update_map,analysisEngine.total_query_count);
+                    pieChartGenerator.show_graph(update_map,analysisEngine.total_query_count);
                     break;
                 case 2:
                     System.out.println("Input Database");
@@ -73,6 +74,9 @@ public class AnalysisMenuDriven {
                             fileOps.file_writer("Total "+ entry.getValue() + " inserts performed on " +  dbKeyArray [1]+"\n");
                         }
                     }
+                    pieChartGenerator = new PieChartGenerator("Query Comparison",insert_map,analysisEngine.total_query_count);
+                    pieChartGenerator.show_graph(insert_map,analysisEngine.total_query_count);
+
                     break;
                 case 3:
                     System.out.println("Input Database");
@@ -88,13 +92,15 @@ public class AnalysisMenuDriven {
                             fileOps.file_writer("Total "+ entry.getValue() + " deletes performed on " +  dbKeyArray [1]+"\n");
                         }
                     }
+                    pieChartGenerator = new PieChartGenerator("Query Comparison",delete_map,analysisEngine.total_query_count);
+                    pieChartGenerator.show_graph(delete_map,analysisEngine.total_query_count);
                     break;
                 case 4:
                     System.out.println("Input Database");
                     database_name = scanner.next();
-                    delete_map =   analysisEngine.generate_select_count();
+                    select_map =   analysisEngine.generate_select_count();
                     fileOps.file_writer("\n"+"Count Select\n"+"__________________________________________________________\n");
-                    for(Map.Entry<String, Integer> entry : delete_map.entrySet()){
+                    for(Map.Entry<String, Integer> entry : select_map.entrySet()){
                         String dbKey = entry.getKey();
                         String dbKeyArray[] = dbKey.split(" ");
                         if (database_name.equalsIgnoreCase(dbKeyArray[0])){
@@ -102,6 +108,8 @@ public class AnalysisMenuDriven {
                             fileOps.file_writer("Total "+ entry.getValue() + " selects performed on " +  dbKeyArray [1]+"\n");
                         }
                     }
+                    pieChartGenerator = new PieChartGenerator("Query Comparison",insert_map,analysisEngine.total_query_count);
+                    pieChartGenerator.show_graph(select_map,analysisEngine.total_query_count);
                     break;
                 case 5:
                     count_queries = analysisEngine.count_queries_by_vm();
