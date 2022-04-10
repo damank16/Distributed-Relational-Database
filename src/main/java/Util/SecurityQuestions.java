@@ -23,8 +23,8 @@ public class SecurityQuestions {
 
     public static  int getRandomSecurityQuestionIndex() {
          int min = 1;
-         int max = 4;
-         int randomQuestionIndex = new Random().nextInt(max - min + 1);
+         int max = 5;
+         int randomQuestionIndex = new Random().nextInt(max - min) + 1;
          return randomQuestionIndex;
     }
 
