@@ -1,6 +1,6 @@
 .idea/
 target/
-
+data/
 .idea
 *.iws
 *.iml

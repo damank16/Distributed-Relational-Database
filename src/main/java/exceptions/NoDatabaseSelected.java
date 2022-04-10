@@ -1,10 +1,9 @@
 package exceptions;
 
 
-public class TableAlreadyExistingException extends RuntimeException{
-
+public class NoDatabaseSelected extends RuntimeException {
     private String message;
-    public TableAlreadyExistingException(String message) {
+    public NoDatabaseSelected(String message) {
         super(message);
         this.message = message;
     }

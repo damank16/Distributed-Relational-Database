@@ -11,12 +11,21 @@ import java.time.format.DateTimeFormatter;
 public class Log {
     FileUtility fileUtility = new FileUtility();
     public static final String log = "log";
+    private static Log logInstance = null;
 
-    public Log() {
+    private Log() {
         File directory = new File(Constants.BASE_PATH_DIRECTORY + log);
         if(!directory.exists()) {
             directory.mkdir();
         }
+    }
+
+    public static Log getLogInstance() {
+        if(logInstance == null) {
+            logInstance = new Log();
+        }
+        return logInstance;
+
     }
 
     private String getTimeStamp() {
@@ -27,22 +36,22 @@ public class Log {
     }
 
     private String createMessage(String... message) {
-        return String.join(" | ", message);
+        return String.join("|", message);
     }
 
-    public void addGeneralLog(long executionTime,int numberOfTables, String virtualMachine, String user, String dbName,String message) {
-        String logMessage = createMessage(getTimeStamp(), user, Long.toString(executionTime),
-                Integer.toString(numberOfTables), virtualMachine, dbName,message);
-        fileUtility.writeDataToFile("general", message);
+    public void addGeneralLog(long executionTime, int numberOfTables, int numberOfRecords, String virtualMachine, String user, String dbName, String message) {
+        String record = createMessage(getTimeStamp(), Long.toString(executionTime), user, dbName, Integer.toString(numberOfTables), Integer.toString(numberOfRecords),
+                virtualMachine, message);
+        fileUtility.writeDataToFile("general", record);
     }
 
-    public void addEventLog(String databaseName, String transactionId, boolean crashReports, String virtualMachine, String user) {
-        String message = createMessage(getTimeStamp(), user, databaseName, transactionId, crashReports + "", virtualMachine);
+    public void addEventLog(String databaseName, String virtualMachine, String user, String info) {
+        String message = createMessage(getTimeStamp(), user, databaseName, virtualMachine, info);
         fileUtility.writeDataToFile("events", message);
     }
 
-    public void addQueryLog(String databaseName, boolean isQueryValid, String query, String queryType, String user, String virtualMachine, String tableName) {
-        String message = createMessage(getTimeStamp(), user, databaseName, isQueryValid + "", query, queryType, virtualMachine, tableName);
+    public void addQueryLog(String databaseName, String query, String queryType, String user, String virtualMachine, String tableName) {
+        String message = createMessage(getTimeStamp(), user, databaseName,tableName, queryType, query, virtualMachine);
         fileUtility.writeDataToFile("query", message);
     }
 }

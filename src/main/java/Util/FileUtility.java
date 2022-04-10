@@ -26,6 +26,16 @@ public class FileUtility {
         if (!file.exists()) {
             try {
                 FileWriter fileWriter = new FileWriter(filePath);
+                if(type == "general") {
+                    String headers = "timestamp|execution_time|user_name|database_name|table_count|record_count|virtual_machine|message";
+                    fileWriter.write(headers + "\n");
+                }else if (type == "events") {
+                    String headers = "timestamp|user_name|database_name|virtual_machine|message";
+                    fileWriter.write(headers + "\n");
+                }else if(type == "query") {
+                    String headers = "timestamp|user_name|database_name|table_name|query_type|query|virtual_machine";
+                    fileWriter.write(headers + "\n");
+                }
                 fileWriter.write(message + "\n");
                 fileWriter.close();
             } catch (IOException e) {

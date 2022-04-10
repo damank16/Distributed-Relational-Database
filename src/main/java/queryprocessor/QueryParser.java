@@ -1,10 +1,14 @@
 package queryprocessor;
 
+import Logger.Log;
 import Util.Constants;
+import Util.Printer;
 import entities.Column;
 import entities.Datatype;
 import entities.Table;
 import exceptions.ImproperQuerySyntaxException;
+import replication.SFTP;
+import session.Session;
 
 import java.io.*;
 import java.util.*;
@@ -29,6 +33,7 @@ public class QueryParser {
     private static final String COMMIT = "commit";
     public static String database;
     QueryProcessor queryProcessor = new QueryProcessorImpl();
+    Log log = Log.getLogInstance();
 
     static boolean checkFileExists(String filePath) {
         File file = new File(filePath);
@@ -66,6 +71,7 @@ public class QueryParser {
 
         String transactionFilePath = Constants.BASE_PATH_DIRECTORY + "transaction.txt";
 
+        try{
         if (createDatabasePattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
                 return writeIntoFile(transactionFilePath, inputQuery);
@@ -74,7 +80,8 @@ public class QueryParser {
                 if (query.length > 3) {
                     throw new IllegalArgumentException("Query syntax is improper");
                 }
-                return queryProcessor.createDatabase(query[2]);
+
+                return queryProcessor.createDatabase(inputQuery, query[2]);
             }
         } else if (dropDatabasePattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
@@ -84,7 +91,7 @@ public class QueryParser {
                 if (query.length > 3) {
                     throw new IllegalArgumentException("Query syntax is improper");
                 }
-                return queryProcessor.dropDatabase(query[2]);
+                return queryProcessor.dropDatabase(inputQuery, query[2]);
             }
         } else if (useDatabasePattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
@@ -94,13 +101,12 @@ public class QueryParser {
                 if (query.length > 3) {
                     throw new IllegalArgumentException("Query syntax is improper");
                 }
-                return queryProcessor.useDatabase(query[2]);
+                return queryProcessor.useDatabase(inputQuery, query[2]);
             }
         } else if (createTablePattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
                 return writeIntoFile(transactionFilePath, inputQuery);
             } else {
-                try {
                     int indexOfFirstParanthesis = inputQuery.indexOf("(");
                     int indexOfLastParanthesis = inputQuery.lastIndexOf(")");
                     if (indexOfFirstParanthesis == -1 || indexOfLastParanthesis == -1) {
@@ -119,7 +125,32 @@ public class QueryParser {
                             Column pkColumn = columns.stream().filter(c -> c.getName().equals(pkCol)).findFirst().orElse(null);
                             if (pkColumn != null) {
                                 pkColumn.setPk(true);
-                                break;
+                                continue;
+                            }
+                        }
+
+                        //FOREIGN KEY (PersonID) REFERENCES Persons (PersonID)
+
+                        if (col.contains("foreign key")) {
+                            int indexOfOpenParan = col.indexOf("(");
+                            int indexOfCloseParan = col.indexOf(")");
+                            String fkCol = col.substring(indexOfOpenParan + 1, indexOfCloseParan);
+                            Column fkColumn = columns.stream().filter(c -> c.getName().equals(fkCol)).findFirst().orElse(null);
+
+                            String colArray[] = col.split("\\s+");
+
+                            if (fkColumn != null) {
+                                fkColumn.setFk(true);
+                                Table fktable = new Table();
+                                fktable.setName(colArray[4]);
+
+                                Column fkTableFkCol = new Column();
+                                String fkColName = colArray[5].replace("(", "");
+                                fkColName = fkColName.replace(")", "");
+                                fkTableFkCol.setName(fkColName);
+                                fkColumn.setForeignKeyTable(fktable);
+                                fkColumn.setForeignKeyTableCol(fkTableFkCol);
+                                continue;
                             }
                         }
 
@@ -150,10 +181,7 @@ public class QueryParser {
                         columns.add(column);
                     }
                     Table table = new Table(tableName, columns);
-                    queryProcessor.createTable(database, table);
-                } catch (ImproperQuerySyntaxException e) {
-                    e.printStackTrace();
-                }
+                    queryProcessor.createTable(inputQuery, database, table);
                 return true;
             }
         } else if (insertTablePattern.matcher(inputQuery).find()) {
@@ -168,7 +196,7 @@ public class QueryParser {
                 int indexOfCloseParan = inputQuery.lastIndexOf(")");
                 int indexOfOpenParan = inputQuery.lastIndexOf("(");
                 String rowValues = inputQuery.substring(indexOfOpenParan + 1, indexOfCloseParan);
-                queryProcessor.insertIntoTable(database, tableName, rowValues);
+                queryProcessor.insertIntoTable(inputQuery, database, tableName, rowValues);
 
                 return true;
             }
@@ -185,10 +213,10 @@ public class QueryParser {
                 String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where") + 1);
                 String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn) + 2);
 
-                queryProcessor.selectFromTable(database, tableName, whereColumn, whereValue);
+                queryProcessor.selectFromTable(inputQuery, database, tableName, whereColumn, whereValue);
                 return true;
             }
-        }else if (simpleSelectPattern.matcher(inputQuery).find()) {
+        } else if (simpleSelectPattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
                 return writeIntoFile(transactionFilePath, inputQuery);
             } else {
@@ -199,11 +227,10 @@ public class QueryParser {
                 }
                 String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from") + 1);
 
-                queryProcessor.simpleSelectFromTable(database, tableName);
+                queryProcessor.simpleSelectFromTable(inputQuery, database, tableName);
                 return true;
             }
-        }
-        else if (deleteTablePattern.matcher(inputQuery).find()) {
+        } else if (deleteTablePattern.matcher(inputQuery).find()) {
             if (checkFileExists(transactionFilePath)) {
                 return writeIntoFile(transactionFilePath, inputQuery);
             } else {
@@ -215,7 +242,7 @@ public class QueryParser {
                 String tableName = selectQueryLiterals.get(selectQueryLiterals.indexOf("from") + 1);
                 String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where") + 1);
                 String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn) + 2);
-                queryProcessor.deletefromTable(database, tableName, whereColumn, whereValue);
+                queryProcessor.deletefromTable(inputQuery, database, tableName, whereColumn, whereValue);
                 return true;
             }
         } else if (updateTablePattern.matcher(inputQuery).find()) {
@@ -232,7 +259,7 @@ public class QueryParser {
                 String updateValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(updateColumn) + 2);
                 String whereColumn = selectQueryLiterals.get(selectQueryLiterals.indexOf("where") + 1);
                 String whereValue = selectQueryLiterals.get(selectQueryLiterals.indexOf(whereColumn) + 2);
-                queryProcessor.updateTable(database, tableName, updateColumn, updateValue, whereColumn, whereValue);
+                queryProcessor.updateTable(inputQuery, database, tableName, updateColumn, updateValue, whereColumn, whereValue);
                 return true;
             }
         } else if (dropTablePattern.matcher(inputQuery).find()) {
@@ -243,16 +270,16 @@ public class QueryParser {
                 if (query.length > 3) {
                     throw new IllegalArgumentException("Query syntax is improper");
                 }
-                return queryProcessor.dropTable(database, query[2]);
+                return queryProcessor.dropTable(inputQuery, database, query[2]);
             }
         } else if (startTransactionPattern.matcher(inputQuery).find()) {
             if (inputQuery.equalsIgnoreCase(START_TRANSACTION)) {
                 File transactionFile = new File(transactionFilePath);
 
                 if (transactionFile.exists()) {
-                    System.out.println("File already exists!");
+                    Printer.printContent("File already exists!");
                 } else {
-                    System.out.println("File created!");
+                    Printer.printContent("File created!");
                     transactionFile.createNewFile();
                 }
 
@@ -265,10 +292,10 @@ public class QueryParser {
                 File transactionFile = new File(transactionFilePath);
 
                 if (transactionFile.exists()) {
-                    System.out.println("File exists and is deleted!");
+                    Printer.printContent("File exists and is deleted!");
                     transactionFile.delete();
                 } else {
-                    System.out.println("File doesn't exists!");
+                    Printer.printContent("File doesn't exists!");
                 }
                 return true;
             } else {
@@ -292,15 +319,20 @@ public class QueryParser {
                     }
                     return true;
                 } else {
-                    System.out.println("There is no ongoing transition");
+                    Printer.printContent("There is no ongoing transition");
                     return false;
                 }
             } else {
-                System.out.println("Invalid Query!!");
+                Printer.printContent("Invalid Query!!");
                 return false;
             }
         } else {
             throw new IllegalArgumentException("Query syntax is improper");
+        }
+    }
+        catch (Exception e){
+            log.addEventLog(database, SFTP.REMOTE_HOST,Session.getInstance().getLoggedInDBUser().getUserName(), e.toString());
+            throw e;
         }
     }
 }
