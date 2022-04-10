@@ -1,6 +1,7 @@
 package replication;
 
 
+import Util.Printer;
 import com.jcraft.jsch.*;
 
 import java.net.InetAddress;
@@ -15,7 +16,7 @@ public class SFTP {
     private static final int CHANNEL_TIMEOUT = 5000;
 
 
-    public void replicate(String localFile, boolean isMetaData, boolean isFileTransger, boolean isMakeDirectory, boolean isRemoveFile, boolean isRemoveDirectory) {
+    public void replicate(String localFile, boolean isMetaData, boolean isFileTransger, boolean isMakeDirectory, boolean isRemoveFile, boolean isRemoveDirectory)  {
         Session jschSession = null;
 
         try {
@@ -59,7 +60,7 @@ public class SFTP {
 
             channelSftp.exit();
         } catch (JSchException | SftpException e) {
-            e.printStackTrace();
+            Printer.printContent(e.getMessage());
         } finally {
             if (jschSession != null) {
                 jschSession.disconnect();
