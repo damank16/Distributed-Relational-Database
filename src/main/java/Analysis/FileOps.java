@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class FileOps {
-    static int faliure_count;
+    public int faliure_count;
     AnalysisEngine analysisEngine = new AnalysisEngine();
     public void file_reader_event() throws IOException {
+        int faliure_counter=0;
         FileInputStream fstream = new FileInputStream(Constants.BASE_PATH_DIRECTORY+"log/events.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
         String record;
@@ -18,11 +19,11 @@ public class FileOps {
         while(record != null){
             record= record.toLowerCase(Locale.ROOT);
             if(record.contains("exception")) {
-                faliure_count++;
+                faliure_counter++;
             }
             record = br.readLine();
         }
-
+        faliure_count= faliure_counter;
     }
     public void file_reader_query() throws Exception{
         ArrayList<String[]> values = new ArrayList<>();
