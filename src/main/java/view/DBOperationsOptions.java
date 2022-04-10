@@ -7,6 +7,7 @@ import Util.Printer;
 import exceptions.SQLDumpGenratorException;
 import features.controller.SQLDumpExportController;
 import queryprocessor.QueryParser;
+import replication.SFTP;
 import session.Session;
 
 import java.io.BufferedReader;
@@ -97,6 +98,7 @@ public class DBOperationsOptions {
                     }
                     break;
                 case "5":
+                    log.addGeneralLog(0,0,0, SFTP.REMOTE_HOST,userSession.getLoggedInDBUser().getUserName(),"", "Logout successfull");
                     userSession.destroyDBUserSession();
                     return;
                 default:
