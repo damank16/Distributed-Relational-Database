@@ -60,14 +60,14 @@ public class ReverseEngineering {
         String databasePath = createFilePath(BASE_PATH_DIRECTORY, database, databaseName, metadata);
         File directory = new File(databasePath);
         if (directory.exists()) {
-            File[] f = directory.listFiles();
-            String outputFileName = "output.txt";
+            File[] fileList = directory.listFiles();
+            String outputFileName = "ERD.txt";
             File outputFile = new File(BASE_PATH_DIRECTORY + File.separator, outputFileName);
             try {
                 FileWriter fileWriter = new FileWriter(outputFile);
 
                 // number of files in db
-                for (File file : f) {
+                for (File file : fileList) {
                     String tableName = getTableName(file);
                     String tableInfo = "Table " + tableName + "\n";
                     try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
@@ -77,13 +77,17 @@ public class ReverseEngineering {
                         for (String line; (line = br.readLine()) != null; ) {
                             String[] text = line.split("\\|");
                             String message = text[0] + " " + text[1] + " (" + text[2] + ")";
-                            fileWriter.write(message + "\n");
 
+                            if(line.contains("PK")) {
+                                message = message + " (PK)";
+                            }
                             if (line.contains("FK")) {
+                                message = message + " (FK)";
                                 fkColList.add(text[0]);
                                 String relation = "Relation - (Column) " + text[0] + " of table " + tableName + " relates to (Column) " + text[6] + " of table: " + text[5];
                                 relationList.add(relation);
                             }
+                            fileWriter.write(message + "\n");
                         }
                         for (int i = 0; i < relationList.size(); i++) {
                             fileWriter.write(relationList.get(i) + "\n");

@@ -1,7 +1,7 @@
 package view;
 
 import Analysis.AnalysisMenuDriven;
-import Analysis.FileOps;
+import DataModelling.ReverseEngineering;
 import Logger.Log;
 import Util.Printer;
 import exceptions.SQLDumpGenratorException;
@@ -10,17 +10,22 @@ import queryprocessor.QueryParser;
 import session.Session;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
+import static Util.Constants.BASE_PATH_DIRECTORY;
+
 public class DBOperationsOptions {
 
-    private  Session userSession;
     public static boolean isDistributed;
-    private Log log = Log.getLogInstance();
+    private final Session userSession;
+    private final Log log = Log.getLogInstance();
+
     public DBOperationsOptions(Session userSession) {
         this.userSession = userSession;
     }
+
     public void displayMainMenu() {
 
         Printer.printTitle("DB Operations Menu");
@@ -40,7 +45,7 @@ public class DBOperationsOptions {
                     QueryParser queryParser = new QueryParser();
                     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-                    String query = ""; ;
+                    String query = "";
                     do {
                         try {
                             Printer.printContent("Enter input or exit:");
@@ -50,8 +55,7 @@ public class DBOperationsOptions {
                                 queryParser.parseQuery(query);
                                 Printer.printContent("completed...");
                             }
-                        }
-                        catch (Exception e){
+                        } catch (Exception e) {
 
                             Printer.printContent(e.getMessage());
                         }
@@ -61,8 +65,8 @@ public class DBOperationsOptions {
                 }
                 case "2":
                     Printer.printContent("Enter database name to generate SQL dump:");
-                     String databaseName = scanner.nextLine().trim();
-                     SQLDumpExportController sqlDumpExportController = new SQLDumpExportController();
+                    String databaseName = scanner.nextLine().trim();
+                    SQLDumpExportController sqlDumpExportController = new SQLDumpExportController();
                     try {
                         sqlDumpExportController.generateDump(databaseName);
                     } catch (SQLDumpGenratorException e) {
@@ -71,13 +75,24 @@ public class DBOperationsOptions {
                     }
                     break;
                 case "3":
+                    System.out.println("Please enter database name");
+                    File directory = new File(BASE_PATH_DIRECTORY + "/database");
+                    File[] fileList = directory.listFiles();
+                    int count = 1;
+                    for (File file : fileList) {
+                        System.out.println(count + ". " + file.getName());
+                        count++;
+                    }
+                    int dbName = scanner.nextInt();
+                    ReverseEngineering re = new ReverseEngineering();
+                    re.readTables(fileList[dbName - 1].getName());
+                    System.out.println("ERD generated in data/ERD.txt file");
                     break;
                 case "4":
                     AnalysisMenuDriven analysisMenuDriven = new AnalysisMenuDriven();
-                    try{
+                    try {
                         analysisMenuDriven.analytics_input();
-                    }
-                    catch(Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
