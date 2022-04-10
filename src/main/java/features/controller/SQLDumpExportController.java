@@ -3,8 +3,10 @@ package features.controller;
 import Logger.Log;
 import Util.Constants;
 import exceptions.SQLDumpGenratorException;
+import session.Session;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -56,6 +58,7 @@ public class SQLDumpExportController {
     }
 
     public static void createSQLDumpFile(List<File> tables, String databaseName) throws SQLDumpGenratorException {
+        long startTime = System.currentTimeMillis();
         File sqlDumpDirectory = new File(Constants.SQL_DUMP_PATH_DIRECTORY);
         if(!sqlDumpDirectory.exists()) {
             sqlDumpDirectory.mkdir();
@@ -68,6 +71,7 @@ public class SQLDumpExportController {
             String createDatabaseQuery = getCreateDatabaseQuery(databaseName );
             sqlFileWriter.append(createDatabaseQuery);
             sqlFileWriter.append("\n");
+            int noOfTables = tables.size();
             for (File table : tables) {
                 String tableName = table.getName().split("\\.")[0];
                 String createTableQuery = getCreateTableQuery(tableName,databaseName );
@@ -76,7 +80,7 @@ public class SQLDumpExportController {
                 //read the table file from second line ignore header
                 File tableFile = new File(table.getAbsolutePath());
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(tableFile));
-                String tableRow = bufferedReader.readLine();
+                String tableRow ;
                 while ((tableRow = bufferedReader.readLine()) != null) {
                     String insertIntoTableQuery = getInsertIntoTableQuery(tableRow, tableName);
                     sqlFileWriter.append(insertIntoTableQuery);
@@ -85,6 +89,13 @@ public class SQLDumpExportController {
             }
             sqlFileWriter.append("Commit;");
             sqlFileWriter.close();
+            long endTime = System.currentTimeMillis();
+            long executionTime = (endTime-startTime) ;
+            Log log = new Log();
+            String message = "Success: SQL Dump generated for database";
+            InetAddress ip = InetAddress.getLocalHost();
+            String hostname = ip.getHostName();
+            log.addGeneralLog(executionTime,noOfTables,hostname, Session.getInstance().getLoggedInDBUser().getUserName(),databaseName,message);
         } catch (IOException e) {
             String message = "Error: { " + e.getMessage() + " }!";
             throw new SQLDumpGenratorException(e.getMessage());
@@ -113,6 +124,8 @@ public class SQLDumpExportController {
     }
 
     private static String getCreateTableQuery(String tableName, String databaseName) throws IOException {
+
+        List<String> foreignConstraints = new ArrayList<>();
         StringBuilder createStringBuilder = new StringBuilder();
         createStringBuilder.append("CREATE")
                 .append(" ").append("TABLE")
@@ -132,18 +145,22 @@ public class SQLDumpExportController {
                 String dataType = columnNameAndDataTypeAndConstraint[1];
                 String dataTypeSize = columnNameAndDataTypeAndConstraint[2];
                 createStringBuilder.append(columnName).append(" ").append(dataType).append("(").append(dataTypeSize).append(")");
-                if (columnNameAndDataTypeAndConstraint.length == 4) {
-                    String constraint = columnNameAndDataTypeAndConstraint[3];
-                    if (constraint.equalsIgnoreCase("PK")) {
+                if(columnNameAndDataTypeAndConstraint.length > 3) {
+                    String primaryConstraint = columnNameAndDataTypeAndConstraint[3];
+                    if (primaryConstraint.equalsIgnoreCase("PK")) {
                         createStringBuilder.append(" ").append("PRIMARY KEY");
                     }
-                    createStringBuilder.append(Constants.COMMA_DELIMITER);
+                    if (columnNameAndDataTypeAndConstraint.length > 4) {
+                        String foreignConstraint = "FOREIGN KEY (" + columnName + ") REFERENCES " + columnNameAndDataTypeAndConstraint[5] + "(" + columnNameAndDataTypeAndConstraint[6] + ")";
+                        foreignConstraints.add(foreignConstraint);
+                    }
                 }
-                else
-                    createStringBuilder.append(Constants.COMMA_DELIMITER);
+                createStringBuilder.append(Constants.COMMA_DELIMITER);
             }
         }
-
+        for(String foreignConstraint : foreignConstraints) {
+            createStringBuilder.append(foreignConstraint).append(Constants.COMMA_DELIMITER);
+        }
         createStringBuilder.deleteCharAt(createStringBuilder.length() - 1).append(");");
         return createStringBuilder.toString();
     }
