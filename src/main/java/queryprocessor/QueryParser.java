@@ -2,6 +2,7 @@ package queryprocessor;
 
 import Logger.Log;
 import Util.Constants;
+import Util.Printer;
 import entities.Column;
 import entities.Datatype;
 import entities.Table;
@@ -276,9 +277,9 @@ public class QueryParser {
                 File transactionFile = new File(transactionFilePath);
 
                 if (transactionFile.exists()) {
-                    System.out.println("File already exists!");
+                    Printer.printContent("File already exists!");
                 } else {
-                    System.out.println("File created!");
+                    Printer.printContent("File created!");
                     transactionFile.createNewFile();
                 }
 
@@ -291,10 +292,10 @@ public class QueryParser {
                 File transactionFile = new File(transactionFilePath);
 
                 if (transactionFile.exists()) {
-                    System.out.println("File exists and is deleted!");
+                    Printer.printContent("File exists and is deleted!");
                     transactionFile.delete();
                 } else {
-                    System.out.println("File doesn't exists!");
+                    Printer.printContent("File doesn't exists!");
                 }
                 return true;
             } else {
@@ -318,11 +319,11 @@ public class QueryParser {
                     }
                     return true;
                 } else {
-                    System.out.println("There is no ongoing transition");
+                    Printer.printContent("There is no ongoing transition");
                     return false;
                 }
             } else {
-                System.out.println("Invalid Query!!");
+                Printer.printContent("Invalid Query!!");
                 return false;
             }
         } else {

@@ -205,7 +205,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 for (String val : row){
                     System.out.print( val + " ");
                 }
-                System.out.println();
+                Printer.printContent("\n");
             }
 
         }
@@ -280,7 +280,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 }
                 rowString = rowString.substring(0,rowString.length()-1) + "\n";
                 writer.write(rowString);
-                //System.out.println();
+                //Printer.printContent();
             }
             writer.flush();
             writer.close();
@@ -328,7 +328,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 }
                 rowString = rowString.substring(0, rowString.length() - 1) + "\n";
                 writer.write(rowString);
-                //System.out.println();
+                //Printer.printContent();
             }
             writer.flush();
             writer.close();
@@ -357,7 +357,7 @@ public class QueryProcessorImpl implements QueryProcessor {
                 for (String val : row){
                     System.out.print( val + " ");
                 }
-                System.out.println();
+                Printer.printContent("\n");
             }
             log.addQueryLog(database,query,Constants.SELECT,username,VMName,tableName);
         }

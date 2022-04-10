@@ -66,7 +66,7 @@ public class SFTP {
                 jschSession.disconnect();
             }
         }
-        System.out.println("Done");
+        Printer.printContent("Done");
     }
 
 
