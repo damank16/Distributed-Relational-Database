@@ -11,7 +11,7 @@ public class AnalysisEngine {
     static int create;
     static int delete;
     public static List<Map<String, String>> consolidated_queries = new ArrayList<>();
-    public int total_query_count;
+    public static int total_query_count;
 
     public List<Map<String, String>> generateAnalysis(ArrayList<String[]> values,String[] head) {
 
