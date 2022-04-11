@@ -21,7 +21,7 @@ mvn clean install
 
 ## Contributors 
 
-- [ ] Elizabeth James 
+- [ ] Elizabeth James - B00867159 
 - [ ] Bhavesh Lalwani - B00885318
 - [ ] Dhairya Doctor - B00864868
 - [ ] Damandeep Kaur -B00904831
